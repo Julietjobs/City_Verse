@@ -108,6 +108,8 @@
   <script defer src="static/js/bulma-carousel.min.js"></script>
   <script defer src="static/js/bulma-slider.min.js"></script>
   <script defer src="static/js/index.js"></script>
+  <!-- ECharts for sunburst chart -->
+  <script src="static/js/echarts.min.js"></script>
   
   <!-- Structured Data for Academic Papers -->
   <script type="application/ld+json">
@@ -186,53 +188,6 @@
     <i class="fas fa-chevron-up"></i>
   </button>
 
-  <!-- More Works Dropdown -->
-  <div class="more-works-container">
-    <button class="more-works-btn" onclick="toggleMoreWorks()" title="View More Works from Our Lab">
-      <i class="fas fa-flask"></i>
-      More Works
-      <i class="fas fa-chevron-down dropdown-arrow"></i>
-    </button>
-    <div class="more-works-dropdown" id="moreWorksDropdown">
-      <div class="dropdown-header">
-        <h4>More Works from Our Lab</h4>
-        <button class="close-btn" onclick="toggleMoreWorks()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="works-list">
-        <!-- TODO: Replace with your lab's related works -->
-        <a href="https://arxiv.org/abs/PAPER_ID_1" class="work-item" target="_blank">
-          <div class="work-info">
-            <!-- TODO: Replace with actual paper title -->
-            <h5>Paper Title 1</h5>
-            <!-- TODO: Replace with brief description -->
-            <p>Brief description of the work and its main contribution.</p>
-            <!-- TODO: Replace with venue and year -->
-            <span class="work-venue">Conference/Journal 2024</span>
-          </div>
-          <i class="fas fa-external-link-alt"></i>
-        </a>
-        <!-- TODO: Add more related works or remove extra items -->
-        <a href="https://arxiv.org/abs/PAPER_ID_2" class="work-item" target="_blank">
-          <div class="work-info">
-            <h5>Paper Title 2</h5>
-            <p>Brief description of the work and its main contribution.</p>
-            <span class="work-venue">Conference/Journal 2023</span>
-          </div>
-          <i class="fas fa-external-link-alt"></i>
-        </a>
-        <a href="https://arxiv.org/abs/PAPER_ID_3" class="work-item" target="_blank">
-          <div class="work-info">
-            <h5>Paper Title 3</h5>
-            <p>Brief description of the work and its main contribution.</p>
-            <span class="work-venue">Conference/Journal 2023</span>
-          </div>
-          <i class="fas fa-external-link-alt"></i>
-        </a>
-      </div>
-    </div>
-  </div>
 
   <main id="main-content">
   <section class="hero">
@@ -241,23 +196,28 @@
         <div class="columns is-centered">
           <div class="column has-text-centered">
             <!-- TODO: Replace with your paper title -->
-            <h1 class="title is-1 publication-title">Academic Project Page</h1>
+            <h1 class="title is-1 publication-title">CityVerse: A Unified Data Platform for Multi-Task Urban Computing with Large Language Models</h1>
             <div class="is-size-5 publication-authors">
               <!-- TODO: Replace with your paper authors and their personal links -->
               <span class="author-block">
-                <a href="FIRST AUTHOR PERSONAL LINK" target="_blank">First Author</a><sup>*</sup>,</span>
+                <a href="" target="_blank">Yaqiao Zhu</a><sup>1</sup>,</span>
                 <span class="author-block">
-                  <a href="SECOND AUTHOR PERSONAL LINK" target="_blank">Second Author</a><sup>*</sup>,</span>
+                  <a href="https://hongkaiw.github.io/" target="_blank">Hongkai Wen</a><sup>2</sup>,</span>
                   <span class="author-block">
-                    <a href="THIRD AUTHOR PERSONAL LINK" target="_blank">Third Author</a>
+                    <a href="https://environment.leeds.ac.uk/geography/staff/1005/professor-mark-birkin" target="_blank">Mark Birkin</a><sup>3</sup>
+                  </span>
+                  <span class="author-block">
+                    <a href="https://manluow.github.io/" target="_blank">Man Luo</a><sup>1</sup>
                   </span>
                   </div>
 
                   <div class="is-size-5 publication-authors">
                     <!-- TODO: Replace with your institution and conference/journal info -->
-                    <span class="author-block">Institution Name<br>Conference name and year</span>
+                    <span class="author-block"><sup>1</sup>University of Exeter</span>
+                    <span class="author-block"><sup>2</sup>University of Leeds</span>
+                    <span class="author-block"><sup>3</sup>University of Warwick</span>
                     <!-- TODO: Remove this line if no equal contribution -->
-                    <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
+                    
                   </div>
 
                   <div class="column has-text-centered">
@@ -274,7 +234,7 @@
                     </span>
 
                     <!-- TODO: Add your supplementary material PDF or remove this section -->
-                    <span class="link-block">
+                    <!-- <span class="link-block">
                       <a href="static/pdfs/supplementary_material.pdf" target="_blank"
                       class="external-link button is-normal is-rounded is-dark">
                       <span class="icon">
@@ -282,7 +242,7 @@
                       </span>
                       <span>Supplementary</span>
                     </a>
-                  </span>
+                  </span> -->
 
                   <!-- TODO: Replace with your GitHub repository URL -->
                   <span class="link-block">
@@ -314,24 +274,6 @@
 </section>
 
 
-<!-- Teaser video-->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <!-- TODO: Replace with your teaser video -->
-      <video poster="" id="tree" autoplay controls muted loop height="100%" preload="metadata">
-        <!-- TODO: Add your video file path here -->
-        <source src="static/videos/banner_video.mp4" type="video/mp4">
-      </video>
-      <!-- TODO: Replace with your video description -->
-      <h2 class="subtitle has-text-centered">
-        Aliquam vitae elit ullamcorper tellus egestas pellentesque. Ut lacus tellus, maximus vel lectus at, placerat pretium mi. Maecenas dignissim tincidunt vestibulum. Sed consequat hendrerit nisl ut maximus. 
-      </h2>
-    </div>
-  </div>
-</section>
-<!-- End teaser video -->
-
 <!-- Paper abstract -->
 <section class="section hero is-light">
   <div class="container is-max-desktop">
@@ -341,7 +283,7 @@
         <div class="content has-text-justified">
           <!-- TODO: Replace with your paper abstract -->
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ullamcorper tellus sed ante aliquam tempus. Etiam porttitor urna feugiat nibh elementum, et tempor dolor mattis. Donec accumsan enim augue, a vulputate nisi sodales sit amet. Proin bibendum ex eget mauris cursus euismod nec et nibh. Maecenas ac gravida ante, nec cursus dui. Vivamus purus nibh, placerat ac purus eget, sagittis vestibulum metus. Sed vestibulum bibendum lectus gravida commodo. Pellentesque auctor leo vitae sagittis suscipit.
+            Large Language Models (LLMs) show remarkable potential for urban computing, from spatial reasoning to predictive analytics. However, evaluating LLMs across diverse urban tasks faces two critical challenges: lack of unified platforms for consistent multi-source data access, and fragmented task definitions that hinder fair comparison. To address these challenges, we present CityVerse, the first unified platform integrating multi-source urban data, capability-based task taxonomy, and dynamic simulation for systematic LLM evaluation in urban contexts. CityVerse provides: (1) coordinate-based Data APIs unifying ten categories of urban data—including spatial features, temporal dynamics, demographics, and multi-modal imagery—with over 38 million curated records; (2) Task APIs organizing 43 urban computing tasks into a four-level cognitive hierarchy: Perception, Spatial Understanding, Reasoning & Prediction, and Decision & Interaction, enabling standardized evaluation across capability levels; (3) an interactive visualization frontend supporting real-time data retrieval, multi-layer display, and simulation replay for intuitive exploration and validation. We validate the platform's effectiveness through evaluations on mainstream LLMs across representative tasks, demonstrating its capability to support reproducible and systematic assessment. CityVerse provides a reusable foundation for advancing LLMs and multi-task approaches in the urban computing domain.
           </p>
         </div>
       </div>
@@ -351,6 +293,7 @@
 <!-- End paper abstract -->
 
 
+
 <!-- Image carousel -->
 <section class="hero is-small">
   <div class="hero-body">
@@ -358,31 +301,31 @@
       <div id="results-carousel" class="carousel results-carousel">
        <div class="item">
         <!-- TODO: Replace with your research result images -->
-        <img src="static/images/carousel1.jpg" alt="First research result visualization" loading="lazy"/>
+        <img src="static/images/crime.png" alt="" loading="lazy"/>
         <!-- TODO: Replace with description of this result -->
         <h2 class="subtitle has-text-centered">
-          First image description.
+          Crime / Population Heatmap.
         </h2>
       </div>
       <div class="item">
         <!-- Your image here -->
-        <img src="static/images/carousel2.jpg" alt="Second research result visualization" loading="lazy"/>
+        <img src="static/images/taxi.png" alt="Second research result visualization" loading="lazy"/>
         <h2 class="subtitle has-text-centered">
-          Second image description.
+          Taxi Demand Heatmap & Statistics.
         </h2>
       </div>
       <div class="item">
         <!-- Your image here -->
-        <img src="static/images/carousel3.jpg" alt="Third research result visualization" loading="lazy"/>
+        <img src="static/images/street view image.png" alt="Third research result visualization" loading="lazy"/>
         <h2 class="subtitle has-text-centered">
-         Third image description.
+          Satellite / Street Image View.
        </h2>
      </div>
      <div class="item">
       <!-- Your image here -->
-      <img src="static/images/carousel4.jpg" alt="Fourth research result visualization" loading="lazy"/>
+      <img src="static/images/traffic sim.png" alt="Fourth research result visualization" loading="lazy"/>
       <h2 class="subtitle has-text-centered">
-        Fourth image description.
+        Traffic Simulation.
       </h2>
     </div>
   </div>
@@ -394,59 +337,298 @@
 
 
 
-<!-- Youtube video -->
+<!-- sunburst -->
 <section class="hero is-small is-light">
   <div class="hero-body">
     <div class="container">
-      <!-- Paper video. -->
-      <h2 class="title is-3">Video Presentation</h2>
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
-          
-          <div class="publication-video">
-            <!-- TODO: Replace with your YouTube video ID -->
-            <iframe src="https://www.youtube.com/embed/JkaxUblCGz0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-          </div>
-        </div>
-      </div>
+      <h2 class="title is-3">Task Taxonomy</h2>
+      <div id="sunburst-main" style="height: 600px; width: 100%;"></div>
     </div>
   </div>
 </section>
-<!-- End youtube video -->
+<!-- End sunburst -->
+
+<script>
+const GLOBAL_FONT = 'Times New Roman, Times, serif';
+/* 一级配色（同色系） */
+const COLORS = {
+  perception: '#f89c74',
+  spatial:    '#f7cf71',
+  reasoning:  '#8ac6d1',
+  decision:   '#ffb6ba'
+};
+function shade(hex, k=0.92){
+  const clamp = x=>Math.max(0,Math.min(255,Math.round(x)));
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  const rr=clamp(r*k), gg=clamp(g*k), bb=clamp(b*k);
+  return '#'+rr.toString(16).padStart(2,'0')+gg.toString(16).padStart(2,'0')+bb.toString(16).padStart(2,'0');
+}
+
+/* 全称树 */
+const FULL = {
+  name: "CityVerse",
+  children: [
+    { name: "Perception", key: "perception", children: [
+      { name: "Street-view Perception", children: [
+        { name: "Street-view Understanding" },
+        { name: "Scene Description" },
+        { name: "Visual Question Answering" },
+        { name: "Landmark Recognition" }
+      ]},
+      { name: "Satellite Perception", children: [
+        { name: "Satellite Image Understanding" },
+        { name: "Land-use Classification" },
+        { name: "Building Density Analysis" }
+      ]},
+      { name: "Infrastructure Perception", children: [
+        { name: "Facility Recognition" }
+      ]}
+    ]},
+    { name: "Spatial Understanding", key: "spatial", children: [
+      { name: "Location Recognition", children: [
+        { name: "Image Geolocation" },
+        { name: "Address Recognition" },
+        { name: "Landmark Localization" },
+        { name: "POI Identification" }
+      ]},
+      { name: "Spatial Relations", children: [
+        { name: "Spatial Reasoning" },
+        { name: "Accessibility Analysis" },
+        { name: "Neighborhood Analysis" }
+      ]},
+      { name: "Geo-cognition", children: [
+        { name: "Geographic QA" },
+        { name: "Location Description" },
+        { name: "POI Recommendation" }
+      ]},
+      { name: "Functional Zoning", children: [
+        { name: "Urban Function Recognition" },
+        { name: "Functional Area Delineation" }
+      ]},
+      { name: "Cross-modal Understanding", children: [
+        { name: "Geo–Satellite Fusion" },
+        { name: "Geo–Street-view Fusion" },
+        { name: "Multi-modal Fusion" }
+      ]}
+    ]},
+    { name: "Reasoning and Prediction", key: "reasoning", children: [
+      { name: "Traffic Prediction", children: [
+        { name: "Traffic Flow Forecasting" },
+        { name: "Congestion Prediction" }
+      ]},
+      { name: "Demand Prediction", children: [
+        { name: "Ride-hailing Demand Forecasting" }
+      ]},
+      { name: "Trajectory Prediction", children: [
+        { name: "Mobility Prediction" },
+        { name: "Trajectory Generation" },
+        { name: "Travel Pattern Recognition" }
+      ]},
+      { name: "Risk Assessment", children: [
+        { name: "Crime Risk Assessment" }
+      ]},
+      { name: "Geospatial Prediction", children: [
+        { name: "Spatial Prediction" },
+        { name: "Population Distribution" },
+        { name: "Urban Expansion" }
+      ]}
+    ]},
+    { name: "Decision and Interaction", key: "decision", children: [
+      { name: "Navigation and Planning", children: [
+        { name: "Navigation Guidance" },
+        { name: "Route Planning" }
+      ]},
+      { name: "Traffic Control", children: [
+        { name: "Traffic Signal Control" }
+      ]},
+      { name: "Facility Planning", children: [
+        { name: "Public Facility Siting" },
+        { name: "EV Charging Station Planning" },
+        { name: "School Planning" },
+        { name: "Commercial Site Selection" }
+      ]},
+      { name: "Conversational Interaction", children: [
+        { name: "Urban Understanding QA" },
+        { name: "Reasoning QA" },
+        { name: "Predictive QA" }
+      ]}
+    ]}
+  ]
+};
+
+/* 清晰简写（可继续微调） */
+const ABBR = {
+  // L2
+  'Street-view Perception':'SV Perception',
+  'Satellite Perception':'Sat Perception',
+  'Infrastructure Perception':'Infra Perception',
+  'Location Recognition':'Loc Recognition',
+  'Spatial Relations':'Spatial Relations',
+  'Geo-cognition':'Geo-cognition',
+  'Functional Zoning':'Functional Zoning',
+  'Cross-modal Understanding':'Cross-modal',
+  'Traffic Prediction':'Traffic Prediction',
+  'Demand Prediction':'Demand Prediction',
+  'Trajectory Prediction':'Trajectory Prediction',
+  'Risk Assessment':'Risk Assessment',
+  'Geospatial Prediction':'Geospatial Prediction',
+  'Navigation and Planning':'Navigation & Planning',
+  'Traffic Control':'Traffic Control',
+  'Facility Planning':'Facility Planning',
+  'Conversational Interaction':'Conversational INT',
+  // L3 leaves (清楚但短)
+  'Street-view Understanding':'SV Understanding',
+  'Scene Description':'Scene Description',
+  'Visual Question Answering':'Visual QA',
+  'Landmark Recognition':'Landmark Recognition',
+  'Satellite Image Understanding':'Sat-Image Understanding',
+  'Land-use Classification':'Land-use Class.',
+  'Building Density Analysis':'Bldg Density',
+  'Facility Recognition':'Facility Recognition',
+  'Image Geolocation':'Image Geolocation',
+  'Address Recognition':'Addr Recognition',
+  'Landmark Localization':'Landmark Localization',
+  'POI Identification':'POI Ident.',
+  'Spatial Reasoning':'Spatial Reasoning',
+  'Accessibility Analysis':'Accessibility Analysis',
+  'Neighborhood Analysis':'Neighborhood Analysis',
+  'Geographic QA':'GeoQA',
+  'Location Description':'Location Description',
+  'POI Recommendation':'POI Recommendation',
+  'Urban Function Recognition':'Urban Func Recognition',
+  'Functional Area Delineation':'Func-Area Delineation',
+  'Geo–Satellite Fusion':'Geo–Sat Fusion',
+  'Geo–Street-view Fusion':'Geo–SV Fusion',
+  'Multi-modal Fusion':'Multimodal Fusion',
+  'Traffic Flow Forecasting':'Traffic Flow Fcst',
+  'Congestion Prediction':'Congestion Pred',
+  'Ride-hailing Demand Forecasting':'RH Demand Fcst',
+  'Mobility Prediction':'Mobility Pred',
+  'Trajectory Generation':'Trajectory Gen',
+  'Travel Pattern Recognition':'Travel Pattern Recog',
+  'Crime Risk Assessment':'Crime Risk Assess',
+  'Spatial Prediction':'Spatial Pred',
+  'Population Distribution':'Population Dist',
+  'Urban Expansion':'Urban Expansion',
+  'Navigation Guidance':'Navigation Guide',
+  'Route Planning':'Route Plan',
+  'Traffic Signal Control':'Traffic Signal Ctrl',
+  'Public Facility Siting':'Public Facility Sit.',
+  'EV Charging Station Planning':'EV Charging Plan',
+  'School Planning':'School Plan',
+  'Commercial Site Selection':'Commercial Site Sel.',
+  'Urban Understanding QA':'Urban Understanding QA',
+  'Reasoning QA':'Reasoning QA',
+  'Predictive QA':'Predictive QA'
+};
+
+const shortenUnderstanding = text => text.replace(/Understanding/g, 'Und.');
+
+/* 构树并着色 + 赋值 */
+function build(node, parentKey=null){
+  const ab = shortenUnderstanding(ABBR[node.name] || node.name);
+  const out = { name: ab, full: node.name };
+  // 一级颜色
+  if (node.key==='perception') out.itemStyle={color:COLORS.perception};
+  if (node.key==='spatial')    out.itemStyle={color:COLORS.spatial};
+  if (node.key==='reasoning')  out.itemStyle={color:COLORS.reasoning};
+  if (node.key==='decision')   out.itemStyle={color:COLORS.decision};
+  // 次级/三级：沿父色微调
+  if (!out.itemStyle && parentKey){
+    const base = COLORS[parentKey] || null;
+    if (base) out.itemStyle = { color: shade(base, 0.92) };
+  }
+  if (node.children && node.children.length){
+    out.children = node.children.map(c=>build(c, node.key||parentKey));
+    out.value = out.children.reduce((s,c)=>s+(c.value||1),0);
+  }else{
+    out.value = 1;
+  }
+  return out;
+}
+const data = build(FULL);
+data.itemStyle = { color: '#fff' };
+
+/* 近似自动换行：按层级给不同"行宽"，在空格/连字符处断行 */
+function wrapByDepth(text, depth){
+  const max = depth>=3 ? 12 : depth===2 ? 16 : 20; // 层越深越短
+  const words = text.split(/([ -/])/); // 保留分隔符（空格/连字符/斜杠）
+  let line='', out=[], cur=0;
+  for (let w of words){
+    if ((line+w).length > max){
+      if (line.length) out.push(line.trim());
+      line = w.trim();
+    }else{
+      line += w;
+    }
+  }
+  if (line.length) out.push(line.trim());
+  return out.join('\n');
+}
+
+// Initialize sunburst chart when ECharts is loaded
+if (typeof echarts !== 'undefined') {
+  const chart = echarts.init(document.getElementById('sunburst-main'));
+  chart.setOption({
+    textStyle:{ fontFamily: GLOBAL_FONT },
+    title:{ text:'', left:'center' },
+    tooltip:{
+      trigger:'item',
+      formatter: p => `<b>${p.data.full || p.name}</b><br/>${p.name}`
+    },
+    series:[{
+      type:'sunburst',
+      data:[data],
+      radius:[0,'95%'],
+      sort:null,
+      emphasis:{ focus:'ancestor' },
+      label:{
+        rotate:'radial',
+        fontSize:12,
+        formatter: p => {
+          const depth = p.treePathInfo ? p.treePathInfo.length-1 : 1;
+          return wrapByDepth(p.name, depth);
+        }
+      }
+    }]
+  });
+  window.addEventListener('resize', chart.resize);
+} else {
+  // Wait for ECharts to load
+  window.addEventListener('load', function() {
+    if (typeof echarts !== 'undefined') {
+      const chart = echarts.init(document.getElementById('sunburst-main'));
+      chart.setOption({
+        textStyle:{ fontFamily: GLOBAL_FONT },
+        title:{ text:'', left:'center' },
+        tooltip:{
+          trigger:'item',
+          formatter: p => `<b>${p.data.full || p.name}</b><br/>${p.name}`
+        },
+        series:[{
+          type:'sunburst',
+          data:[data],
+          radius:[0,'95%'],
+          sort:null,
+          emphasis:{ focus:'ancestor' },
+          label:{
+            rotate:'radial',
+            fontSize:12,
+            formatter: p => {
+              const depth = p.treePathInfo ? p.treePathInfo.length-1 : 1;
+              return wrapByDepth(p.name, depth);
+            }
+          }
+        }]
+      });
+      window.addEventListener('resize', chart.resize);
+    }
+  });
+}
+</script>
 
 
-<!-- Video carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title is-3">Another Carousel</h2>
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-video1">
-          <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video1" controls muted loop height="100%" preload="metadata">
-            <!-- Your video file here -->
-            <source src="static/videos/carousel1.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-video2">
-          <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video2" controls muted loop height="100%" preload="metadata">
-            <!-- Your video file here -->
-            <source src="static/videos/carousel2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-video3">
-          <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video3" controls muted loop height="100%" preload="metadata">
-            <!-- Your video file here -->
-            <source src="static/videos/carousel3.mp4" type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End video carousel -->
+
 
 
 
@@ -454,19 +636,7 @@
 
 
 <!-- Paper poster -->
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title">Poster</h2>
 
-      <!-- TODO: Replace with your poster PDF -->
-      <iframe  src="static/pdfs/sample.pdf" width="100%" height="550">
-          </iframe>
-        
-      </div>
-    </div>
-  </section>
-<!--End paper poster -->
 
 
 
