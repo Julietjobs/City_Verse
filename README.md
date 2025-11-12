@@ -1,1 +1,1 @@
-# City_Verse
+# CityVerse project page
