@@ -53,7 +53,7 @@ To run a trajectory & traffic signal replay:
 
 
 
-![image-20251113171055143](.\imgs\image-20251113171055143.png)
+![image-20251113171055143](./imgs/image-20251113171055143.png)
 
 
 
@@ -94,4 +94,4 @@ After launching the server:
 2. Click on any point on the map
 3. Satellite and street-view images for that location will be displayed
 
-![image-20251113171301508](.\imgs\image-20251113171301508.png)
+![image-20251113171301508](./imgs/image-20251113171301508.png)
