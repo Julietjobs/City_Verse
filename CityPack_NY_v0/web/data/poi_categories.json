@@ -1,0 +1,121 @@
+{
+  "commercial": {
+    "count": 430,
+    "color": "#ea580c",
+    "icon": "🏢",
+    "examples": [
+      "Empire State Building",
+      "One Financial Square",
+      "Morgan Stanley Building"
+    ]
+  },
+  "historic": {
+    "count": 4,
+    "color": "#8b5cf6",
+    "icon": "🏰",
+    "examples": [
+      "Blockhouse No. 1",
+      "Middle Collegiate Church",
+      "Washington Square Arch"
+    ]
+  },
+  "other": {
+    "count": 13,
+    "color": "#64748b",
+    "icon": "📍",
+    "examples": [
+      "Chrysler Building",
+      "USS Intrepid",
+      "USS Growler"
+    ]
+  },
+  "government": {
+    "count": 82,
+    "color": "#1f2937",
+    "icon": "🏛️",
+    "examples": [
+      "United Nations Headquarters",
+      "The Cooper Union's Foundation Building",
+      "FDNY Engine 33/Ladder 9"
+    ]
+  },
+  "residential": {
+    "count": 715,
+    "color": "#f59e0b",
+    "icon": "🏠",
+    "examples": [
+      "Four Seasons Private Residences New York Downtown",
+      "Trump World Tower",
+      "Millennium Tower Residences"
+    ]
+  },
+  "transportation": {
+    "count": 27,
+    "color": "#2563eb",
+    "icon": "🚉",
+    "examples": [
+      "Port Authority Bus Terminal",
+      "NYCT Rail Control Center",
+      "Grand Central Terminal"
+    ]
+  },
+  "sports": {
+    "count": 2,
+    "color": "#059669",
+    "icon": "🏟️",
+    "examples": [
+      "Cultural Center",
+      "Tennis House"
+    ]
+  },
+  "education": {
+    "count": 297,
+    "color": "#16a34a",
+    "icon": "🎓",
+    "examples": [
+      "Helen and Martin Kimmel Center for University Life",
+      "41 Cooper Square",
+      "Barney Building"
+    ]
+  },
+  "religious": {
+    "count": 166,
+    "color": "#0891b2",
+    "icon": "⛪",
+    "examples": [
+      "Grace Church",
+      "Church of the Good Shepherd",
+      "Saint Mark's in-the-Bowery"
+    ]
+  },
+  "entertainment": {
+    "count": 39,
+    "color": "#9333ea",
+    "icon": "🎭",
+    "examples": [
+      "Winter Garden Theatre",
+      "Guggenheim Museum",
+      "Lucille Lortel Theatre"
+    ]
+  },
+  "industrial": {
+    "count": 37,
+    "color": "#6b7280",
+    "icon": "🏭",
+    "examples": [
+      "Manhattan Mini Storage",
+      "Manhattan Grit Chamber",
+      "IRT Substation #12"
+    ]
+  },
+  "healthcare": {
+    "count": 26,
+    "color": "#dc2626",
+    "icon": "🏥",
+    "examples": [
+      "NYC Health + Hospitals/Gotham Health, Roberto Clemente Center",
+      "Bernstein Pavilion",
+      "National Maritime Union Building"
+    ]
+  }
+}

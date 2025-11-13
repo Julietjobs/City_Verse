@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CityVerse - NYC Digital Twin Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- External Libraries -->
+  <link href="./lib/maplibre-gl.css" rel="stylesheet" />
+  
+  <!-- Custom Styles -->
+  <link href="./css/main.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Control Panel -->
+  <div class="panel" id="controlPanel">
+    <h3>🏙️ CityVerse Layers</h3>
+
+    <!-- Base Layers (Always Visible) -->
+    <h4>Base</h4>
+    <div class="pill">
+      <span class="dot" style="background:#777"></span>
+      Buildings
+    </div>
+    <div class="pill">
+      <span class="dot" style="background:#0a84ff"></span>
+      Roads
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- Overlay Layers (Optional) -->
+    <h4>Overlays</h4>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-signals" />
+      <label for="tgl-signals">🚦 Traffic Signals</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-tracts" />
+      <label for="tgl-tracts">👥 Population Density</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-crime" />
+      <label for="tgl-crime">🚨 Crime Data (2014-2024)</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-crime2024" />
+      <label for="tgl-crime2024">📊 2024 Crime Weekly</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-poi" />
+      <label for="tgl-poi">📍 Points of Interest</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-image-viewer" />
+      <label for="tgl-image-viewer">📷 Image Viewer Mode</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-traffic-flow" />
+      <label for="tgl-traffic-flow">🚦 Traffic Flow Control</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-taxi-demand" />
+      <label for="tgl-taxi-demand">🚕 Taxi Demand of 2024</label>
+    </div>
+    
+    <div class="toggle">
+      <input type="checkbox" id="tgl-weather" />
+      <label for="tgl-weather">🌤️ Weather Information</label>
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- Time Controls -->
+    <div id="timeControl" class="time-control hidden">
+      <label for="yearSlider">📅 Crime Data Year Filter</label>
+      <div class="time-display" id="yearDisplay">All Years (2014-2024)</div>
+      <input type="range" id="yearSlider" class="time-slider" 
+             min="2014" max="2024" value="2024" step="1" />
+      <div style="display:flex; justify-content:space-between;" class="text-small text-muted">
+        <span>2014</span>
+        <span>2024</span>
+      </div>
+    </div>
+    
+    <div id="weeklyTimeControl" class="time-control hidden">
+      <label for="weekSlider">📈 2024 Weekly Crime Data</label>
+      <div class="time-display" id="weekDisplay">Week 52 (2024)</div>
+      <input type="range" id="weekSlider" class="time-slider" 
+             min="1" max="52" value="52" step="1" />
+      <div style="display:flex; justify-content:space-between;" class="text-small text-muted">
+        <span>Week 1</span>
+        <span>Week 52</span>
+      </div>
+    </div>
+    
+    <div id="taxiDateControl" class="time-control hidden">
+      <label for="taxiDatePicker">🚕 Taxi Demand Date</label>
+      <div class="time-display" id="taxiDateDisplay">2024-01-01</div>
+      <input type="date" id="taxiDatePicker" class="date-picker" 
+             min="2024-01-01" max="2024-12-31" value="2024-01-01" 
+             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;" />
+      <div style="margin-top:8px;font-size:12px;color:#666;" id="taxiDateStats">
+        Loading data...
+      </div>
+    </div>
+    
+    <div id="weatherDateControl" class="time-control hidden">
+      <label for="weatherDatePicker">🌤️ Weather Date</label>
+      <div class="time-display" id="weatherDateDisplay">2024-01-01</div>
+      <input type="date" id="weatherDatePicker" class="date-picker" 
+             min="2024-01-01" max="2024-12-31" value="2024-01-01" 
+             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:8px;" />
+    </div>
+    
+    <!-- POI Category Filters -->
+    <div id="poiFilters" class="filter-control hidden">
+      <div class="filter-header">
+        <label class="font-weight-bold">🏷️ POI Categories</label>
+        <div class="toggle" style="margin:0;">
+          <input type="checkbox" id="poi-select-all" checked />
+          <label for="poi-select-all" style="font-weight:600; color:#0a84ff; font-size:12px;">
+            Select All
+          </label>
+        </div>
+      </div>
+      <div id="poiCategoryList" class="filter-list">
+        <!-- Category checkboxes will be populated by JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Dynamic Legends -->
+    <div id="legend" class="legend"></div>
+  </div>
+
+  <!-- Traffic Flow Control Panel -->
+  <div id="tf-control-panel" class="tf-control-panel" style="display: none;">
+    <h3>🚦 Traffic Flow Control</h3>
+    
+    <table class="tf-stats-table">
+      <tr>
+        <td>Road Network</td>
+        <td id="tf-roadnet-status"><span style="color: #6b7280;">⊗ Not loaded</span></td>
+      </tr>
+      <tr>
+        <td>Vehicles</td>
+        <td id="tf-car-num">0</td>
+      </tr>
+      <tr>
+        <td>Current Step</td>
+        <td id="tf-current-step">0</td>
+      </tr>
+      <tr>
+        <td>Total Steps</td>
+        <td id="tf-total-steps">0</td>
+      </tr>
+      <tr>
+        <td>Progress</td>
+        <td id="tf-progress">0%</td>
+      </tr>
+    </table>
+    
+    <div class="tf-upload-section">
+      <div class="tf-file-input-wrapper">
+        <label>Upload Replay File (TXT)</label>
+        <input type="file" id="tf-replay-file" accept=".txt">
+      </div>
+    </div>
+    
+    <div class="tf-control-box" id="tf-control-box">
+      <h4>Playback Control</h4>
+      
+      <div class="tf-speed-control">
+        <div class="tf-speed-label">
+          <span>Replay Speed</span>
+          <span id="tf-speed-value">0.50x</span>
+        </div>
+        <input type="range" class="tf-speed-slider" id="tf-speed-slider" min="0" max="100" value="50">
+      </div>
+      
+      <div class="tf-speed-buttons">
+        <button class="tf-speed-btn" id="tf-slow-btn">−</button>
+        <button class="tf-speed-btn" id="tf-fast-btn">+</button>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px;">
+        <button class="tf-btn tf-btn-secondary" id="tf-stop-btn">Stop</button>
+        <button class="tf-btn tf-btn-secondary" id="tf-prev-btn">◄</button>
+        <button class="tf-btn tf-btn-secondary" id="tf-next-btn">►</button>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;">
+        <button class="tf-btn tf-btn-primary" id="tf-play-btn">▶ Play</button>
+        <button class="tf-btn tf-btn-primary" id="tf-pause-btn">⏸ Pause</button>
+      </div>
+    </div>
+    
+    <div class="tf-info" id="tf-info"></div>
+    
+    <div class="tf-shortcuts">
+      <h4>Keyboard Shortcuts</h4>
+      <div style="font-size: 11px; line-height: 1.6; color: #666;">
+        <div><b>Space</b>: Play/Pause</div>
+        <div><b>S</b>: Stop (Reset)</div>
+        <div><b>← or [</b>: Previous Frame</div>
+        <div><b>→ or ]</b>: Next Frame</div>
+        <div><b>- / +</b>: Speed Down/Up</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weather Information Bar (Bottom) -->
+  <div id="weatherBar" class="weather-bar hidden">
+    <div class="weather-bar-content">
+      <div class="weather-icon" id="weatherIcon">☀️</div>
+      <div class="weather-details">
+        <div class="weather-date" id="weatherDate">2024-01-01</div>
+        <div class="weather-info-grid">
+          <div class="weather-info-item">
+            <span class="weather-value" id="weatherType">Clear</span>
+          </div>
+          <div class="weather-info-item">
+            <span class="weather-label">Temp:</span>
+            <span class="weather-value" id="weatherTemp">--</span>
+          </div>
+          <div class="weather-info-item">
+            <span class="weather-label">Precip:</span>
+            <span class="weather-value" id="weatherPrecip">--</span>
+          </div>
+          <div class="weather-info-item">
+            <span class="weather-label">Humidity:</span>
+            <span class="weather-value" id="weatherHumidity">--</span>
+          </div>
+          <div class="weather-info-item">
+            <span class="weather-label">Wind:</span>
+            <span class="weather-value" id="weatherWind">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./lib/maplibre-gl.js"></script>
+  <script src="./js/config.js"></script>
+  <script src="./js/layers.js"></script>
+  <script src="./js/legend.js"></script>
+  <script src="./js/image-viewer.js"></script>
+  <script src="./js/traffic-flow.js"></script>
+  
+  <script>
+    // Main Application
+    class CityVerseApp {
+      constructor() {
+        this.map = null;
+        this.layerManager = null;
+        this.legendManager = null;
+        this.imageViewer = null;
+        this.trafficFlow = null;
+      }
+
+      async init() {
+        try {
+          // 加载配置
+          await window.cityVerseConfig.loadConfigs();
+          
+          // 初始化地图
+          this.initMap();
+          
+          // 等待地图加载完成
+          this.map.on('load', () => {
+            this.setupManagers();
+            this.setupLayerControls();
+            this.hideOverlayLayersOnLoad();
+          });
+          
+        } catch (error) {
+          console.error('❌ Application initialization failed:', error);
+          this.showError('Failed to initialize application. Please check console for details.');
+        }
+      }
+
+      initMap() {
+        const settings = window.cityVerseConfig.getSettings();
+        
+        this.map = new maplibregl.Map({
+          container: 'map',
+          style: './tiles/style.json',
+          center: settings.mapCenter,
+          zoom: settings.mapZoom,
+          hash: true
+        });
+
+        this.map.addControl(new maplibregl.NavigationControl(), 'bottom-left');
+      }
+
+      setupManagers() {
+        this.layerManager = new LayerManager(this.map);
+        this.legendManager = new LegendManager(this.layerManager);
+        this.imageViewer = new ImageViewer(this.map, this.layerManager);
+        this.trafficFlow = new TrafficFlowManager(this.map);
+        
+        // 将应用实例暴露到全局，供其他模块访问
+        window.app = this;
+      }
+
+      setupLayerControls() {
+        const overlayConfigs = window.cityVerseConfig.getOverlayConfigs();
+        
+        // 为每个叠加图层设置控制
+        Object.entries(overlayConfigs).forEach(([layerId, config]) => {
+          const toggleId = `#tgl-${layerId.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+          const toggle = document.querySelector(toggleId);
+          
+          if (toggle) {
+            toggle.addEventListener('change', (e) => {
+              this.layerManager.toggleLayer(layerId, e.target.checked);
+              this.legendManager.renderLegends();
+            });
+          }
+        });
+        
+        // Setup traffic flow controls
+        this.setupTrafficFlowControls();
+      }
+
+      setupTrafficFlowControls() {
+        // File upload
+        document.getElementById('tf-replay-file').addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file && this.trafficFlow.isActive) {
+            this.trafficFlow.loadReplayFile(file);
+          }
+        });
+        
+        // Playback controls
+        document.getElementById('tf-play-btn').addEventListener('click', () => {
+          this.trafficFlow.playSimulation();
+        });
+        
+        document.getElementById('tf-pause-btn').addEventListener('click', () => {
+          this.trafficFlow.pauseSimulation();
+        });
+        
+        document.getElementById('tf-stop-btn').addEventListener('click', () => {
+          this.trafficFlow.stopSimulation();
+        });
+        
+        document.getElementById('tf-prev-btn').addEventListener('click', () => {
+          this.trafficFlow.stepBackward();
+        });
+        
+        document.getElementById('tf-next-btn').addEventListener('click', () => {
+          this.trafficFlow.stepForward();
+        });
+        
+        // Speed controls
+        document.getElementById('tf-slow-btn').addEventListener('click', () => {
+          this.trafficFlow.adjustSpeed(-0.1);
+        });
+        
+        document.getElementById('tf-fast-btn').addEventListener('click', () => {
+          this.trafficFlow.adjustSpeed(0.1);
+        });
+        
+        document.getElementById('tf-speed-slider').addEventListener('input', (e) => {
+          this.trafficFlow.setSpeed(parseInt(e.target.value));
+        });
+      }
+
+      hideOverlayLayersOnLoad() {
+        const overlayConfigs = window.cityVerseConfig.getOverlayConfigs();
+        
+        Object.entries(overlayConfigs).forEach(([layerId, config]) => {
+          this.layerManager.ensureHiddenOnLoad(config.layerIds);
+        });
+      }
+
+      showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: #f8d7da;
+          color: #721c24;
+          padding: 20px;
+          border-radius: 8px;
+          border: 1px solid #f5c6cb;
+          z-index: 1000;
+          max-width: 400px;
+          text-align: center;
+        `;
+        errorDiv.innerHTML = `
+          <h3>⚠️ Error</h3>
+          <p>${message}</p>
+          <button onclick="this.parentElement.remove()" 
+                  style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Close
+          </button>
+        `;
+        document.body.appendChild(errorDiv);
+      }
+    }
+
+    // Initialize Application
+    const app = new CityVerseApp();
+    app.init();
+  </script>
+</body>
+</html>

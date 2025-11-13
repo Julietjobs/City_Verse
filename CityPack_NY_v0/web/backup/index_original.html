@@ -1,0 +1,915 @@
+<!-- 修复图例显示与layger显示不一致的问题 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NYC Offline (MBTiles/MVT) — Overlays Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="./lib/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    html, body, #map { height:100%; margin:0; padding:0; }
+    .panel {
+      position:absolute; top:12px; right:12px; z-index:10;
+      background:#fff; padding:12px 14px; border-radius:14px;
+      box-shadow:0 2px 10px rgba(0,0,0,.15); font:13px/1.45 system-ui;
+      max-width:300px; min-width:240px;
+    }
+    .panel h3 { margin:0 0 8px; font-size:14px; }
+    .panel h4 { margin:10px 0 6px; font-size:13px; color:#444; }
+    .toggle { display:flex; align-items:center; gap:8px; margin:6px 0; }
+    .legend { margin-top:8px; }
+    .legend .item { display:flex; align-items:center; margin:4px 0; }
+    .legend .swatch { width:14px; height:14px; margin-right:6px; border:1px solid #999; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:2px 8px; border-radius:999px; background:#f3f4f6; margin:2px 4px 0 0; }
+    .pill .dot { width:10px; height:10px; border-radius:50%; }
+    .hr { height:1px; background:#eee; margin:8px 0; }
+    .time-control { margin:10px 0; }
+    .time-control label { display:block; font-weight:600; margin-bottom:4px; }
+    .time-slider { width:100%; margin:8px 0; }
+    .time-display { text-align:center; font-weight:600; color:#0a84ff; margin:4px 0; }
+    
+    /* Satellite & Street View Popup Styles */
+    .image-popup {
+      max-width: 600px !important;
+      min-width: 500px;
+    }
+    .image-popup .maplibregl-popup-content {
+      padding: 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .popup-header {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e9ecef;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .popup-images {
+      display: flex;
+      gap: 1px;
+    }
+    .popup-image-container {
+      flex: 1;
+      position: relative;
+    }
+    .popup-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .popup-image-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .popup-info {
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .popup-loading {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+    }
+    .popup-error {
+      padding: 16px;
+      color: #dc3545;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div class="panel" id="controlPanel">
+    <h3>Layers</h3>
+
+    <!-- Base map (always on) -->
+    <h4>Base</h4>
+    <div class="pill"><span class="dot" style="background:#777"></span>Buildings</div>
+    <div class="pill"><span class="dot" style="background:#0a84ff"></span>Roads</div>
+
+    <div class="hr"></div>
+
+    <!-- Overlays (opt-in) -->
+    <h4>Overlays</h4>
+    <div class="toggle">
+      <input type="checkbox" id="tgl-signals" />
+      <label for="tgl-signals">Traffic Signals</label>
+    </div>
+    <div class="toggle">
+      <input type="checkbox" id="tgl-tracts" />
+      <label for="tgl-tracts">Census Tracts — Population Density</label>
+    </div>
+    <div class="toggle">
+      <input type="checkbox" id="tgl-crime" />
+      <label for="tgl-crime">Crime Data — Heat Map & Points (2014-2024)</label>
+    </div>
+    <div class="toggle">
+      <input type="checkbox" id="tgl-crime-2024" />
+      <label for="tgl-crime-2024">2024 Crime Data — Weekly View</label>
+    </div>
+    <div class="toggle">
+      <input type="checkbox" id="tgl-poi" />
+      <label for="tgl-poi">Points of Interest (POI)</label>
+    </div>
+    <div class="toggle">
+      <input type="checkbox" id="tgl-image-viewer" />
+      <label for="tgl-image-viewer">Image Viewer Mode</label>
+    </div>
+    <div class="hr"></div>
+
+    <!-- Time Control for Crime Data -->
+    <div id="timeControl" class="time-control" style="display:none;">
+      <label for="yearSlider">Crime Data Year Filter</label>
+      <div class="time-display" id="yearDisplay">All Years (2014-2024)</div>
+      <input type="range" id="yearSlider" class="time-slider" min="2014" max="2024" value="2024" step="1" />
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#666;">
+        <span>2014</span>
+        <span>2024</span>
+      </div>
+    </div>
+    
+    <!-- Time Control for 2024 Weekly Crime Data -->
+    <div id="weeklyTimeControl" class="time-control" style="display:none;">
+      <label for="weekSlider">2024 Weekly Crime Data</label>
+      <div class="time-display" id="weekDisplay">Week 52 (2024)</div>
+      <input type="range" id="weekSlider" class="time-slider" min="1" max="52" value="52" step="1" />
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#666;">
+        <span>Week 1</span>
+        <span>Week 52</span>
+      </div>
+    </div>
+    
+    <!-- POI Category Filters -->
+    <div id="poiFilters" class="time-control" style="display:none;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <label style="font-weight:600;">POI Categories</label>
+        <div class="toggle" style="margin:0;">
+          <input type="checkbox" id="poi-select-all" checked />
+          <label for="poi-select-all" style="font-weight:600; color:#0a84ff; font-size:12px;">Select All</label>
+        </div>
+      </div>
+      <div id="poiCategoryList" style="max-height:200px; overflow-y:auto; margin:8px 0;">
+        <!-- Category checkboxes will be populated by JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Extensible placeholder where overlay-specific UIs (legends, filters) appear -->
+    <div id="legend" class="legend"></div>
+  </div>
+
+  <script src="./lib/maplibre-gl.js"></script>
+  <script>
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: './tiles/style.json',
+      center: [-73.9851, 40.7589],
+      zoom: 12,
+      hash: true
+    });
+    map.addControl(new maplibregl.NavigationControl(), 'top-left');
+
+    const $ = (sel) => document.querySelector(sel);
+
+    function setLayersVisibility(ids, visible) {
+      const vis = visible ? 'visible' : 'none';
+      ids.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis); });
+    }
+
+    function ensureHiddenOnLoad(ids) {
+      ids.forEach(id => {
+        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+      });
+    }
+
+    const activeOverlays = new Set();
+    function renderLegends() {
+      const parts = [];
+      for (const key of activeOverlays) {
+        const ov = overlays[key];
+        if (ov && typeof ov.legend === 'function') {
+          const html = ov.legend();
+          if (html) parts.push(`<div data-legend="${key}">${html}</div>`);
+        }
+      }
+    //   $('#legend').innerHTML = parts.join('<div class="hr"></div>') || '';
+      $('#legend').innerHTML = parts.join('') || '';
+    }
+
+    const overlays = {
+      signals: {
+        label: 'Traffic Signals',
+        layerIds: ['signals'],
+        legend() {
+          return '<div style="font-weight:600;margin-bottom:6px;">Traffic Signals</div>' +
+                 '<div class="pill"><span class="dot" style="background:#e11d48"></span>Signals</div>';
+        },
+        onEnable() { },
+        onDisable() { }
+      },
+      tracts: {
+        label: 'Census Tracts — Population Density',
+        layerIds: ['tracts-fill','tracts-outline'],
+        legend() {
+          const bins = [
+            { color:'#f7fbff', label:'0-2k' },
+            { color:'#deebf7', label:'2k-5k' },
+            { color:'#c6dbef', label:'5k-10k' },
+            { color:'#9ecae1', label:'10k-20k' },
+            { color:'#6baed6', label:'20k-40k' },
+            { color:'#3182bd', label:'40k-80k' },
+            { color:'#08519c', label:'80k+' }
+          ];
+          return (
+            '<div style="font-weight:600;margin-bottom:6px;">Density (/km²)</div>' +
+            bins.map(b => `<div class="item"><span class="swatch" style="background:${b.color}"></span>${b.label}</div>`).join('')
+          );
+        },
+        onEnable() { bindTractPopup(); },
+        onDisable() { }
+      },
+      crime: {
+        label: 'Crime Data — Heat Map & Points (2014-2024)',
+        layerIds: ['crime-heatmap', 'crime-points'],
+        legend() {
+          const currentYear = getCurrentYear();
+          const stats = getCrimeStats(currentYear);
+          
+          const types = [
+            { color:'#dc2626', label:'Felony', count: stats.felony },
+            { color:'#ea580c', label:'Misdemeanor', count: stats.misdemeanor },
+            { color:'#facc15', label:'Violation', count: stats.violation }
+          ];
+          
+          return (
+            '<div style="font-weight:600;margin-bottom:6px;">Crime Statistics - ' + currentYear + '</div>' +
+            '<div style="margin-bottom:8px;font-size:12px;color:#0a84ff;font-weight:600;">Total: ' + stats.total.toLocaleString() + ' cases</div>' +
+            types.map(t => `<div class="item"><span class="swatch" style="background:${t.color}"></span>${t.label}: ${t.count.toLocaleString()}</div>`).join('') +
+            '<div style="margin-top:8px;font-size:10px;color:#888;font-style:italic;">Complete dataset - all ' + stats.total.toLocaleString() + ' records included</div>' +
+            '<div style="margin-top:4px;font-size:11px;color:#666;">Heat map: zoom 8-15 | Points: zoom 10+</div>'
+          );
+        },
+        onEnable() { 
+          bindCrimePopup(); 
+          $('#timeControl').style.display = 'block';
+          setupYearFilter();
+        },
+        onDisable() { 
+          $('#timeControl').style.display = 'none';
+          clearYearFilter();
+        }
+      },
+      crime2024: {
+        label: '2024 Crime Data — Weekly View',
+        layerIds: ['crime-2024-heatmap', 'crime-2024-points'],
+        legend() {
+          const currentWeek = getCurrentWeek();
+          const stats = getCrime2024Stats(currentWeek);
+          
+          const types = [
+            { color:'#dc2626', label:'Felony', count: stats.felony },
+            { color:'#ea580c', label:'Misdemeanor', count: stats.misdemeanor },
+            { color:'#facc15', label:'Violation', count: stats.violation }
+          ];
+          
+          return (
+            '<div style="font-weight:600;margin-bottom:6px;">2024 Crime - Week ' + currentWeek + '</div>' +
+            '<div style="margin-bottom:8px;font-size:12px;color:#0a84ff;font-weight:600;">Total: ' + stats.total.toLocaleString() + ' cases</div>' +
+            types.map(t => `<div class="item"><span class="swatch" style="background:${t.color}"></span>${t.label}: ${t.count.toLocaleString()}</div>`).join('') +
+            '<div style="margin-top:8px;font-size:10px;color:#888;font-style:italic;">Complete weekly dataset - all ' + stats.total.toLocaleString() + ' records</div>' +
+            '<div style="margin-top:4px;font-size:11px;color:#666;">Heat map: zoom 8-15 | Points: zoom 10+ (full display)</div>'
+          );
+        },
+        onEnable() { 
+          bindCrime2024Popup(); 
+          $('#weeklyTimeControl').style.display = 'block';
+          setupWeekFilter();
+        },
+        onDisable() { 
+          $('#weeklyTimeControl').style.display = 'none';
+          clearWeekFilter();
+        }
+      },
+      poi: {
+        label: 'Points of Interest (POI)',
+        layerIds: ['poi-points'],
+        legend() {
+          // 不显示单独的图例，POI信息显示在分类过滤器中
+          return '';
+        },
+        onEnable() { 
+          bindPOIPopup(); 
+          $('#poiFilters').style.display = 'block';
+          setupPOIFilters();
+        },
+        onDisable() { 
+          $('#poiFilters').style.display = 'none';
+          clearPOIFilters();
+        }
+      },
+      imageViewer: {
+        label: 'Image Viewer Mode',
+        layerIds: [], // No specific layers needed
+        legend() {
+          return '<div style="font-weight:600;margin-bottom:6px;">Image Viewer</div>' +
+                 '<div style="font-size:12px;color:#666;margin-bottom:6px;">Click anywhere on the map to view images</div>' +
+                 '<div class="pill"><span style="font-size:14px;">🛰️</span>Satellite</div>' +
+                 '<div class="pill"><span style="font-size:14px;">🚶</span>Street View</div>';
+        },
+        onEnable() { 
+          // Image viewer is already set up in setupImageViewer()
+        },
+        onDisable() { 
+          // No specific cleanup needed
+        }
+      }
+    };
+
+    const tractPopup = new maplibregl.Popup({ closeButton:true, closeOnClick:true });
+    function bindTractPopup() {
+      if (!map.__tractPopupBound) {
+        map.on('click', 'tracts-fill', (e) => {
+          const f = e.features?.[0]; if (!f) return;
+          const p = f.properties || {};
+          const { lng, lat } = e.lngLat;
+          tractPopup
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div style="min-width:240px">
+                <div style="font-weight:600;margin-bottom:4px;"><b>${p.NAME || 'Census Tract'}</b></div>
+                <div>GEOID: ${p.GEOID || ''}</div>
+                <div>Population: ${Number(p.population||0).toLocaleString()}</div>
+                <div>Area: ${Number(p.area_km2||0).toFixed(3)} km²</div>
+                <div>Density: ${Number(p.density_km2||0).toLocaleString()} /km²</div>
+                <div style="border-top:1px solid #eee;margin:8px 0;"></div>
+                <div style="font-weight:600;margin-bottom:4px;">Coordinates</div>
+                <div>Lon: ${lng.toFixed(6)}<br/>Lat: ${lat.toFixed(6)}</div>
+              </div>`)
+            .addTo(map);
+        });
+        map.__tractPopupBound = true;
+      }
+    }
+
+    // Crime popup functionality
+    const crimePopup = new maplibregl.Popup({ closeButton:true, closeOnClick:true });
+    function bindCrimePopup() {
+      if (!map.__crimePopupBound) {
+        map.on('click', 'crime-points', (e) => {
+          const f = e.features?.[0]; if (!f) return;
+          const p = f.properties || {};
+          const { lng, lat } = e.lngLat;
+          crimePopup
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div style="min-width:240px">
+                <div style="font-weight:600;margin-bottom:4px;"><b>Crime Report</b></div>
+                <div>ID: ${p.complaint_id || ''}</div>
+                <div>Date: ${p.year}/${p.month}/${p.day}</div>
+                <div>Category: <span style="color:${p.color || '#666'}">${p.crime_category || 'Unknown'}</span></div>
+                <div>Description: ${p.description || 'N/A'}</div>
+                <div>Precinct: ${p.precinct || 'Unknown'}</div>
+                <div style="border-top:1px solid #eee;margin:8px 0;"></div>
+                <div style="font-weight:600;margin-bottom:4px;">Coordinates</div>
+                <div>Lon: ${lng.toFixed(6)}<br/>Lat: ${lat.toFixed(6)}</div>
+              </div>`)
+            .addTo(map);
+        });
+        map.__crimePopupBound = true;
+      }
+    }
+
+    // 2024 Crime popup functionality
+    const crime2024Popup = new maplibregl.Popup({ closeButton:true, closeOnClick:true });
+    function bindCrime2024Popup() {
+      if (!map.__crime2024PopupBound) {
+        map.on('click', 'crime-2024-points', (e) => {
+          const f = e.features?.[0]; if (!f) return;
+          const p = f.properties || {};
+          const { lng, lat } = e.lngLat;
+          crime2024Popup
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div style="min-width:240px">
+                <div style="font-weight:600;margin-bottom:4px;"><b>2024 Crime Report - Week ${p.week || p.time_group}</b></div>
+                <div>ID: ${p.complaint_id || ''}</div>
+                <div>Date: ${p.year}/${p.month}/${p.day}</div>
+                <div>Week: ${p.week || p.time_group} (${p.time_group_label || ''})</div>
+                <div>Category: <span style="color:${p.color || '#666'}">${p.crime_category || 'Unknown'}</span></div>
+                <div>Description: ${p.description || 'N/A'}</div>
+                <div>Precinct: ${p.precinct || 'Unknown'}</div>
+                <div style="border-top:1px solid #eee;margin:8px 0;"></div>
+                <div style="font-weight:600;margin-bottom:4px;">Coordinates</div>
+                <div>Lon: ${lng.toFixed(6)}<br/>Lat: ${lat.toFixed(6)}</div>
+              </div>`)
+            .addTo(map);
+        });
+        map.__crime2024PopupBound = true;
+      }
+    }
+
+    // Year filter functionality
+    let currentYearFilter = null;
+    
+    // Get current selected year
+    function getCurrentYear() {
+      const yearSlider = $('#yearSlider');
+      return yearSlider ? parseInt(yearSlider.value) : 2024;
+    }
+    
+    // Get crime statistics for a given year (complete dataset)
+    function getCrimeStats(year) {
+      // Return actual crime statistics from the complete Manhattan dataset
+      const yearlyStats = {
+        2014: { total: 113707, felony: 34805, misdemeanor: 66519, violation: 12383 },
+        2015: { total: 113328, felony: 36102, misdemeanor: 64383, violation: 12843 },
+        2016: { total: 115785, felony: 36427, misdemeanor: 65804, violation: 13554 },
+        2017: { total: 114483, felony: 35488, misdemeanor: 65702, violation: 13293 },
+        2018: { total: 114336, felony: 36157, misdemeanor: 63620, violation: 14559 },
+        2019: { total: 115824, felony: 36332, misdemeanor: 64344, violation: 15148 },
+        2020: { total: 97418, felony: 32341, misdemeanor: 52142, violation: 12935 },
+        2021: { total: 110771, felony: 36687, misdemeanor: 58916, violation: 15168 },
+        2022: { total: 133238, felony: 45315, misdemeanor: 70919, violation: 17004 },
+        2023: { total: 131807, felony: 44994, misdemeanor: 69737, violation: 17076 },
+        2024: { total: 135915, felony: 43796, misdemeanor: 74547, violation: 17572 }
+      };
+      
+      return yearlyStats[year] || { total: 0, felony: 0, misdemeanor: 0, violation: 0 };
+    }
+    
+    function setupYearFilter() {
+      const yearSlider = $('#yearSlider');
+      const yearDisplay = $('#yearDisplay');
+      
+      yearSlider.addEventListener('input', (e) => {
+        const year = parseInt(e.target.value);
+        yearDisplay.textContent = `Year: ${year}`;
+        applyYearFilter(year);
+        // Update legend with new statistics
+        renderLegends();
+      });
+      
+      // Initialize with current year
+      applyYearFilter(parseInt(yearSlider.value));
+      // Initial legend render
+      renderLegends();
+    }
+    
+    function applyYearFilter(year) {
+      currentYearFilter = ['==', ['get', 'year'], year];
+      
+      // Apply filter to both crime layers
+      if (map.getLayer('crime-heatmap')) {
+        map.setFilter('crime-heatmap', currentYearFilter);
+      }
+      if (map.getLayer('crime-points')) {
+        map.setFilter('crime-points', currentYearFilter);
+      }
+    }
+    
+    function clearYearFilter() {
+      currentYearFilter = null;
+      if (map.getLayer('crime-heatmap')) {
+        map.setFilter('crime-heatmap', null);
+      }
+      if (map.getLayer('crime-points')) {
+        map.setFilter('crime-points', null);
+      }
+      $('#yearDisplay').textContent = 'All Years (2014-2024)';
+    }
+
+    // Week filter functionality for 2024 data
+    let currentWeekFilter = null;
+    
+    // Get current selected week
+    function getCurrentWeek() {
+      const weekSlider = $('#weekSlider');
+      return weekSlider ? parseInt(weekSlider.value) : 52;
+    }
+    
+    // Get 2024 crime statistics for a given week
+    function getCrime2024Stats(week) {
+      // Return actual crime statistics from the 2024 weekly dataset
+      const weeklyStats = {
+        1: { total: 2844, felony: 955, misdemeanor: 1539, violation: 350 },
+        2: { total: 2621, felony: 828, misdemeanor: 1345, violation: 448 },
+        3: { total: 2371, felony: 751, misdemeanor: 1299, violation: 321 },
+        4: { total: 2594, felony: 853, misdemeanor: 1388, violation: 353 },
+        5: { total: 2519, felony: 799, misdemeanor: 1394, violation: 326 },
+        6: { total: 2523, felony: 783, misdemeanor: 1392, violation: 348 },
+        7: { total: 2419, felony: 758, misdemeanor: 1321, violation: 340 },
+        8: { total: 2355, felony: 734, misdemeanor: 1316, violation: 305 },
+        9: { total: 2403, felony: 755, misdemeanor: 1354, violation: 294 },
+        10: { total: 2459, felony: 840, misdemeanor: 1293, violation: 326 },
+        11: { total: 2770, felony: 867, misdemeanor: 1459, violation: 444 },
+        12: { total: 2473, felony: 771, misdemeanor: 1391, violation: 311 },
+        13: { total: 2288, felony: 717, misdemeanor: 1243, violation: 328 },
+        14: { total: 2410, felony: 782, misdemeanor: 1333, violation: 295 },
+        15: { total: 2654, felony: 803, misdemeanor: 1473, violation: 378 },
+        16: { total: 2645, felony: 852, misdemeanor: 1466, violation: 327 },
+        17: { total: 2589, felony: 839, misdemeanor: 1431, violation: 319 },
+        18: { total: 2674, felony: 893, misdemeanor: 1407, violation: 374 },
+        19: { total: 2623, felony: 876, misdemeanor: 1402, violation: 345 },
+        20: { total: 2667, felony: 824, misdemeanor: 1476, violation: 367 },
+        21: { total: 2833, felony: 951, misdemeanor: 1506, violation: 376 },
+        22: { total: 2687, felony: 877, misdemeanor: 1454, violation: 356 },
+        23: { total: 2702, felony: 929, misdemeanor: 1455, violation: 318 },
+        24: { total: 2638, felony: 845, misdemeanor: 1421, violation: 372 },
+        25: { total: 2677, felony: 879, misdemeanor: 1481, violation: 317 },
+        26: { total: 2657, felony: 880, misdemeanor: 1463, violation: 314 },
+        27: { total: 2592, felony: 900, misdemeanor: 1402, violation: 290 },
+        28: { total: 2824, felony: 914, misdemeanor: 1533, violation: 377 },
+        29: { total: 2660, felony: 877, misdemeanor: 1450, violation: 333 },
+        30: { total: 2774, felony: 913, misdemeanor: 1536, violation: 325 },
+        31: { total: 2744, felony: 894, misdemeanor: 1534, violation: 316 },
+        32: { total: 2728, felony: 927, misdemeanor: 1508, violation: 293 },
+        33: { total: 2753, felony: 900, misdemeanor: 1558, violation: 295 },
+        34: { total: 2731, felony: 915, misdemeanor: 1465, violation: 351 },
+        35: { total: 2641, felony: 853, misdemeanor: 1453, violation: 335 },
+        36: { total: 2675, felony: 901, misdemeanor: 1431, violation: 343 },
+        37: { total: 2843, felony: 914, misdemeanor: 1555, violation: 374 },
+        38: { total: 2874, felony: 896, misdemeanor: 1608, violation: 370 },
+        39: { total: 2667, felony: 821, misdemeanor: 1513, violation: 333 },
+        40: { total: 2741, felony: 913, misdemeanor: 1447, violation: 381 },
+        41: { total: 2740, felony: 831, misdemeanor: 1556, violation: 353 },
+        42: { total: 2788, felony: 827, misdemeanor: 1613, violation: 348 },
+        43: { total: 2792, felony: 856, misdemeanor: 1549, violation: 387 },
+        44: { total: 2782, felony: 929, misdemeanor: 1502, violation: 351 },
+        45: { total: 2781, felony: 891, misdemeanor: 1552, violation: 338 },
+        46: { total: 2730, felony: 862, misdemeanor: 1539, violation: 329 },
+        47: { total: 2701, felony: 827, misdemeanor: 1539, violation: 335 },
+        48: { total: 2342, felony: 742, misdemeanor: 1302, violation: 298 },
+        49: { total: 2438, felony: 764, misdemeanor: 1337, violation: 337 },
+        50: { total: 2304, felony: 710, misdemeanor: 1291, violation: 303 },
+        51: { total: 2373, felony: 762, misdemeanor: 1316, violation: 295 },
+        52: { total: 1802, felony: 616, misdemeanor: 956, violation: 230 }
+      };
+      
+      return weeklyStats[week] || { total: 0, felony: 0, misdemeanor: 0, violation: 0 };
+    }
+    
+    function setupWeekFilter() {
+      const weekSlider = $('#weekSlider');
+      const weekDisplay = $('#weekDisplay');
+      
+      weekSlider.addEventListener('input', (e) => {
+        const week = parseInt(e.target.value);
+        weekDisplay.textContent = `Week ${week} (2024)`;
+        applyWeekFilter(week);
+        // Update legend with new statistics
+        renderLegends();
+      });
+      
+      // Initialize with current week
+      applyWeekFilter(parseInt(weekSlider.value));
+      // Initial legend render
+      renderLegends();
+    }
+    
+    function applyWeekFilter(week) {
+      currentWeekFilter = ['==', ['get', 'time_group'], week];
+      
+      // Apply filter to both 2024 crime layers
+      if (map.getLayer('crime-2024-heatmap')) {
+        map.setFilter('crime-2024-heatmap', currentWeekFilter);
+      }
+      if (map.getLayer('crime-2024-points')) {
+        map.setFilter('crime-2024-points', currentWeekFilter);
+      }
+    }
+    
+    function clearWeekFilter() {
+      currentWeekFilter = null;
+      if (map.getLayer('crime-2024-heatmap')) {
+        map.setFilter('crime-2024-heatmap', null);
+      }
+      if (map.getLayer('crime-2024-points')) {
+        map.setFilter('crime-2024-points', null);
+      }
+      $('#weekDisplay').textContent = 'Week 52 (2024)';
+    }
+
+    // POI functionality
+    let poiCategories = {};
+    let activePOICategories = new Set();
+    
+    // Load POI categories data
+    fetch('./data/poi_categories.json')
+      .then(response => response.json())
+      .then(data => {
+        poiCategories = data;
+        // Initialize all categories as active
+        Object.keys(poiCategories).forEach(cat => activePOICategories.add(cat));
+      })
+      .catch(err => console.log('POI categories not loaded:', err));
+    
+    function getActivePOICategories() {
+      return Array.from(activePOICategories);
+    }
+    
+    function setupPOIFilters() {
+      const container = $('#poiCategoryList');
+      container.innerHTML = '';
+      
+      // 设置全选/取消全选功能
+      const selectAllCheckbox = $('#poi-select-all');
+      selectAllCheckbox.addEventListener('change', (e) => {
+        const isChecked = e.target.checked;
+        if (isChecked) {
+          // 全选所有类别
+          activePOICategories.clear();
+          Object.keys(poiCategories).forEach(cat => activePOICategories.add(cat));
+        } else {
+          // 取消全选
+          activePOICategories.clear();
+        }
+        
+        // 更新所有类别复选框的状态
+        Object.keys(poiCategories).forEach(category => {
+          const checkbox = $(`#poi-cat-${category}`);
+          if (checkbox) checkbox.checked = isChecked;
+        });
+        
+        applyPOIFilter();
+        renderLegends();
+      });
+      
+      // Sort categories by count (descending)
+      const sortedCategories = Object.entries(poiCategories)
+        .sort(([,a], [,b]) => b.count - a.count);
+      
+      sortedCategories.forEach(([category, info]) => {
+        const div = document.createElement('div');
+        div.className = 'toggle';
+        div.innerHTML = `
+          <input type="checkbox" id="poi-cat-${category}" checked />
+          <label for="poi-cat-${category}" style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:14px;">${info.icon}</span>
+            <span style="width:12px; height:12px; background:${info.color}; border-radius:50%; border:1px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,0.1);"></span>
+            <span>${category} (${info.count})</span>
+          </label>
+        `;
+        
+        const checkbox = div.querySelector('input');
+        checkbox.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            activePOICategories.add(category);
+          } else {
+            activePOICategories.delete(category);
+          }
+          
+          // 更新全选复选框的状态
+          updateSelectAllCheckbox();
+          
+          applyPOIFilter();
+          renderLegends();
+        });
+        
+        container.appendChild(div);
+      });
+    }
+    
+    function updateSelectAllCheckbox() {
+      const selectAllCheckbox = $('#poi-select-all');
+      const totalCategories = Object.keys(poiCategories).length;
+      const activeCategories = getActivePOICategories().length;
+      
+      if (activeCategories === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+      } else if (activeCategories === totalCategories) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+      } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;  // 半选状态
+      }
+    }
+    
+    function applyPOIFilter() {
+      const activeCategories = getActivePOICategories();
+      let filter = null;
+      
+      if (activeCategories.length === 0) {
+        // 如果没有选中任何类别，隐藏所有POI
+        filter = ['==', ['get', 'poi_category'], ''];  // 这会匹配空字符串，实际上隐藏所有POI
+      } else if (activeCategories.length < Object.keys(poiCategories).length) {
+        // 如果选中了部分类别，只显示这些类别
+        filter = ['in', ['get', 'poi_category'], ['literal', activeCategories]];
+      }
+      // 如果所有类别都选中，filter保持为null，显示所有POI
+      
+      if (map.getLayer('poi-points')) {
+        map.setFilter('poi-points', filter);
+      }
+    }
+    
+    function clearPOIFilters() {
+      activePOICategories.clear();
+      Object.keys(poiCategories).forEach(cat => activePOICategories.add(cat));
+      
+      if (map.getLayer('poi-points')) {
+        map.setFilter('poi-points', null);
+      }
+    }
+    
+    // POI popup functionality
+    const poiPopup = new maplibregl.Popup({ closeButton:true, closeOnClick:true });
+    function bindPOIPopup() {
+      if (!map.__poiPopupBound) {
+        map.on('click', 'poi-points', (e) => {
+          const f = e.features?.[0]; if (!f) return;
+          const p = f.properties || {};
+          const { lng, lat } = e.lngLat;
+          const categoryInfo = poiCategories[p.poi_category] || {};
+          
+          poiPopup
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div style="min-width:240px">
+                <div style="font-weight:600;margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:16px;">${categoryInfo.icon || '📍'}</span>
+                  <b>${p.display_name || p.name || 'POI'}</b>
+                </div>
+                <div>Category: <span style="color:${categoryInfo.color || '#666'}">${p.poi_category || 'Unknown'}</span></div>
+                <div>Building Type: ${p.building_type || p.building || 'N/A'}</div>
+                <div>ID: ${p.id || 'N/A'}</div>
+                <div style="border-top:1px solid #eee;margin:8px 0;"></div>
+                <div style="font-weight:600;margin-bottom:4px;">Coordinates</div>
+                <div>Lon: ${lng.toFixed(6)}<br/>Lat: ${lat.toFixed(6)}</div>
+              </div>`)
+            .addTo(map);
+        });
+        map.__poiPopupBound = true;
+      }
+    }
+
+
+    map.on('load', () => {
+      Object.values(overlays).forEach(ov => ensureHiddenOnLoad(ov.layerIds));
+
+      function wireToggle(inputSel, key) {
+        const ov = overlays[key];
+        const el = $(inputSel);
+        const apply = (checked) => {
+          setLayersVisibility(ov.layerIds, checked);
+          if (checked) {
+            activeOverlays.add(key);
+            ov.onEnable && ov.onEnable();
+          } else {
+            activeOverlays.delete(key);
+            ov.onDisable && ov.onDisable();
+          }
+          renderLegends();
+        };
+        el.addEventListener('change', () => apply(el.checked));
+        apply(el.checked);
+      }
+
+      wireToggle('#tgl-signals', 'signals');
+      wireToggle('#tgl-tracts', 'tracts');
+      wireToggle('#tgl-crime', 'crime');
+      wireToggle('#tgl-crime-2024', 'crime2024');
+      wireToggle('#tgl-poi', 'poi');
+      wireToggle('#tgl-image-viewer', 'imageViewer');
+      
+      // Setup satellite & street view click handler
+      setupImageViewer();
+    });
+    
+    // Satellite & Street View functionality
+    const IMAGE_API_BASE = 'http://localhost:8081';
+    
+    function setupImageViewer() {
+      map.on('click', (e) => {
+        // Only show images if Image Viewer is enabled
+        if (!activeOverlays.has('imageViewer')) {
+          return;
+        }
+        
+        // Only show images if not clicking on other features
+        const features = map.queryRenderedFeatures(e.point);
+        const hasInteractiveFeature = features.some(f => 
+          ['tracts-fill', 'crime-points', 'crime-2024-points', 'poi-points'].includes(f.layer.id)
+        );
+        
+        if (!hasInteractiveFeature) {
+          showImagePopup(e.lngLat.lat, e.lngLat.lng, e.lngLat);
+        }
+      });
+    }
+    
+    function showImagePopup(lat, lon, lngLat) {
+      // Create popup with loading state
+      const popup = new maplibregl.Popup({ 
+        className: 'image-popup',
+        closeButton: true, 
+        closeOnClick: true,
+        maxWidth: '600px'
+      })
+      .setLngLat(lngLat)
+      .setHTML(`
+        <div class="popup-header">
+          <span style="font-size:16px;">🌍</span>
+          <span>Loading Images...</span>
+        </div>
+        <div class="popup-loading">
+          <div>📍 Location: ${lat.toFixed(6)}, ${lon.toFixed(6)}</div>
+          <div style="margin-top:10px;">🔄 Fetching satellite and street view images...</div>
+        </div>
+      `)
+      .addTo(map);
+      
+      // Fetch image information
+      fetchImageInfo(lat, lon)
+        .then(info => {
+          updateImagePopup(popup, info, lat, lon);
+        })
+        .catch(error => {
+          console.error('Error fetching image info:', error);
+          popup.setHTML(`
+            <div class="popup-header">
+              <span style="font-size:16px;">❌</span>
+              <span>Error Loading Images</span>
+            </div>
+            <div class="popup-error">
+              Failed to load images: ${error.message}
+            </div>
+          `);
+        });
+    }
+    
+    async function fetchImageInfo(lat, lon) {
+      const response = await fetch(`${IMAGE_API_BASE}/api/images?lat=${lat}&lon=${lon}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return await response.json();
+    }
+    
+    function updateImagePopup(popup, info, lat, lon) {
+      const satelliteUrl = `${IMAGE_API_BASE}/api/satellite?lat=${lat}&lon=${lon}`;
+      let streetviewHtml = '';
+      
+      if (info.streetview.available) {
+        const streetInfo = info.streetview.info;
+        const streetviewUrl = `${IMAGE_API_BASE}/api/streetview?lat=${lat}&lon=${lon}&quality=1024`;
+        streetviewHtml = `
+          <div class="popup-image-container">
+            <img src="${streetviewUrl}" alt="Street View" class="popup-image">
+            <div class="popup-image-label">
+              🚶 Street View (${streetInfo.distance_m}m away)
+            </div>
+          </div>
+        `;
+      } else {
+        streetviewHtml = `
+          <div class="popup-image-container">
+            <div style="height:200px;display:flex;align-items:center;justify-content:center;background:#f8f9fa;color:#666;flex-direction:column;gap:8px;">
+              <span style="font-size:24px;">🚫</span>
+              <div>No street view available</div>
+            </div>
+            <div class="popup-image-label">🚶 Street View (Not Available)</div>
+          </div>
+        `;
+      }
+      
+      popup.setHTML(`
+        <div class="popup-header">
+          <span style="font-size:16px;">🌍</span>
+          <span>Satellite & Street View</span>
+        </div>
+        <div class="popup-images">
+          <div class="popup-image-container">
+            <img src="${satelliteUrl}" alt="Satellite View" class="popup-image">
+            <div class="popup-image-label">🛰️ Satellite View (ESRI)</div>
+          </div>
+          ${streetviewHtml}
+        </div>
+        <div class="popup-info">
+          <div><strong>📍 Location:</strong> ${lat.toFixed(6)}, ${lon.toFixed(6)}</div>
+          ${info.streetview.available ? 
+            `<div><strong>📸 Street View:</strong> Captured ${new Date(info.streetview.info.captured_at).toLocaleDateString()}</div>` : 
+            '<div><strong>📸 Street View:</strong> Not available in this area</div>'
+          }
+          <div style="margin-top:8px;font-size:11px;color:#666;">
+            🛰️ Satellite: ESRI World Imagery | 🚶 Street: Mapillary
+          </div>
+        </div>
+      `);
+    }
+  </script>
+</body>
+</html>

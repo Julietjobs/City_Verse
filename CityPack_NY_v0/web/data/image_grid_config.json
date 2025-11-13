@@ -1,0 +1,16 @@
+{
+  "grid_spacing_meters": {
+    "standard": 15,
+    "simple": 30
+  },
+  "total_points": {
+    "standard": 775637,
+    "simple": 193886
+  },
+  "coverage_area": "Manhattan Island, NYC",
+  "coordinate_system": "WGS84",
+  "files": {
+    "standard": "image_grid_markers.geojson",
+    "simple": "image_grid_markers_simple.geojson"
+  }
+}

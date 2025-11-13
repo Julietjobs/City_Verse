@@ -1,0 +1,154 @@
+{
+  "summary": {
+    "total_trips": 38858319,
+    "total_passengers": 46800964,
+    "avg_trip_distance_miles": 4.51,
+    "avg_fare_amount": 18.06,
+    "time_range": {
+      "start": "2024-01-01 00:00:00",
+      "end": "2024-12-31 23:59:58"
+    },
+    "zones_count": 69,
+    "total_days": 366,
+    "daily_data_points": 24163,
+    "hourly_data_points": 547302
+  },
+  "monthly_stats": [
+    {
+      "month": 1,
+      "trips": 2811120,
+      "avg_daily_trips": 93704
+    },
+    {
+      "month": 2,
+      "trips": 2866991,
+      "avg_daily_trips": 95566
+    },
+    {
+      "month": 3,
+      "trips": 3403759,
+      "avg_daily_trips": 113458
+    },
+    {
+      "month": 4,
+      "trips": 3333780,
+      "avg_daily_trips": 111126
+    },
+    {
+      "month": 5,
+      "trips": 3521325,
+      "avg_daily_trips": 117377
+    },
+    {
+      "month": 6,
+      "trips": 3339715,
+      "avg_daily_trips": 111323
+    },
+    {
+      "month": 7,
+      "trips": 2874274,
+      "avg_daily_trips": 95809
+    },
+    {
+      "month": 8,
+      "trips": 2768469,
+      "avg_daily_trips": 92282
+    },
+    {
+      "month": 9,
+      "trips": 3410993,
+      "avg_daily_trips": 113699
+    },
+    {
+      "month": 10,
+      "trips": 3617672,
+      "avg_daily_trips": 120589
+    },
+    {
+      "month": 11,
+      "trips": 3443722,
+      "avg_daily_trips": 114790
+    },
+    {
+      "month": 12,
+      "trips": 3466499,
+      "avg_daily_trips": 115549
+    }
+  ],
+  "top_zones": [
+    {
+      "zone_id": 237,
+      "Zone": "Upper East Side South",
+      "pickup_count": 1915438,
+      "dropoff_count": 1723799,
+      "total_demand": 3639237
+    },
+    {
+      "zone_id": 236,
+      "Zone": "Upper East Side North",
+      "pickup_count": 1729895,
+      "dropoff_count": 1793164,
+      "total_demand": 3523059
+    },
+    {
+      "zone_id": 161,
+      "Zone": "Midtown Center",
+      "pickup_count": 1914605,
+      "dropoff_count": 1539903,
+      "total_demand": 3454508
+    },
+    {
+      "zone_id": 230,
+      "Zone": "Times Sq/Theatre District",
+      "pickup_count": 1391157,
+      "dropoff_count": 1310989,
+      "total_demand": 2702146
+    },
+    {
+      "zone_id": 162,
+      "Zone": "Midtown East",
+      "pickup_count": 1418846,
+      "dropoff_count": 1183373,
+      "total_demand": 2602219
+    },
+    {
+      "zone_id": 142,
+      "Zone": "Lincoln Square East",
+      "pickup_count": 1314690,
+      "dropoff_count": 1141647,
+      "total_demand": 2456337
+    },
+    {
+      "zone_id": 170,
+      "Zone": "Murray Hill",
+      "pickup_count": 1176580,
+      "dropoff_count": 1212884,
+      "total_demand": 2389464
+    },
+    {
+      "zone_id": 239,
+      "Zone": "Upper West Side South",
+      "pickup_count": 1142282,
+      "dropoff_count": 1131543,
+      "total_demand": 2273825
+    },
+    {
+      "zone_id": 186,
+      "Zone": "Penn Station/Madison Sq West",
+      "pickup_count": 1362156,
+      "dropoff_count": 909372,
+      "total_demand": 2271528
+    },
+    {
+      "zone_id": 68,
+      "Zone": "East Chelsea",
+      "pickup_count": 1113865,
+      "dropoff_count": 1075719,
+      "total_demand": 2189584
+    }
+  ],
+  "date_range": {
+    "min": "2024-01-01",
+    "max": "2024-12-31"
+  }
+}

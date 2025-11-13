@@ -1,0 +1,14 @@
+{
+  "options": { "paths": { "root": "/data" } },
+  "styles": {
+    "basic": { "style": "style.json", "tilejson": { "bounds": [-74.3,40.4,-73.6,41.1] } }
+  },
+  "data": {
+    "nyc": { "mbtiles": "nyc.mbtiles" },
+    "tracts_pop": { "mbtiles": "nyc_tracts_pop.mbtiles" },
+    "crime": { "mbtiles": "nyc_crime.mbtiles" },
+    "crime_2024": { "mbtiles": "nyc_crime_2024_weekly.mbtiles" },
+    "poi": { "mbtiles": "poi.mbtiles" },
+    "taxi_zones": { "mbtiles": "taxi_zones.mbtiles" }
+  }
+}

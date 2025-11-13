@@ -1,0 +1,334 @@
+{
+  "version": 8,
+  "sources": {
+    "nyc": {"type": "vector", "url": "http://localhost:8080/data/nyc.json"},
+    "tracts_pop": { "type":"vector", "url": "http://localhost:8080/data/tracts_pop.json" },
+    "crime": { "type": "vector", "url": "http://localhost:8080/data/crime.json" },
+    "crime_2024": { "type": "vector", "url": "http://localhost:8080/data/crime_2024.json" },
+    "poi": { "type": "vector", "url": "http://localhost:8080/data/poi.json" },
+    "taxi_zones": { "type": "vector", "url": "http://localhost:8080/data/taxi_zones.json" }
+  },
+  "layers": [
+    { "id": "buildings", "type": "fill", "source": "nyc", "source-layer": "buildings",
+      "paint": { "fill-color": "#777777", "fill-opacity": 0.25 } },
+    { "id": "roads", "type": "line", "source": "nyc", "source-layer": "roads",
+      "paint": { "line-color": "#0a84ff", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.6, 16, 2.5] } },
+    { "id": "signals", "type": "circle", "source": "nyc", "source-layer": "signals",
+      "paint": { "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2, 16, 4],
+                 "circle-color": "#e11d48", "circle-stroke-width": 1, "circle-stroke-color": "#ffffff" } },
+    {
+      "id": "tracts-fill",
+      "type": "fill",
+      "source": "tracts_pop",
+      "source-layer": "tracts_pop",            
+      "paint": {
+        "fill-color": [
+          "step", ["get","density_km2"],
+          "#f7fbff",
+          2000,  "#deebf7",
+          5000,  "#c6dbef",
+          10000, "#9ecae1",
+          20000, "#6baed6",
+          40000, "#3182bd",
+          80000, "#08519c"
+        ],
+        "fill-opacity": 0.85
+      }
+    },
+    {
+      "id": "tracts-outline",
+      "type": "line",
+      "source": "tracts_pop",
+      "source-layer": "tracts_pop",
+      "paint": { "line-color": "#444", "line-width": 0.5, "line-opacity": 0.7 }
+    },
+    {
+      "id": "crime-heatmap",
+      "type": "heatmap",
+      "source": "crime",
+      "source-layer": "crime",
+      "maxzoom": 15,
+      "paint": {
+        "heatmap-weight": [
+          "case",
+          ["==", ["get", "crime_category"], "felony"], 1.0,
+          ["==", ["get", "crime_category"], "misdemeanor"], 0.7,
+          ["==", ["get", "crime_category"], "violation"], 0.4,
+          0.5
+        ],
+        "heatmap-intensity": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          8, 0.8,
+          10, 1.2,
+          12, 1.8,
+          14, 2.5
+        ],
+        "heatmap-color": [
+          "interpolate",
+          ["linear"],
+          ["heatmap-density"],
+          0, "rgba(33,102,172,0)",
+          0.2, "rgb(103,169,207)",
+          0.4, "rgb(209,229,240)",
+          0.6, "rgb(253,219,199)",
+          0.8, "rgb(239,138,98)",
+          1, "rgb(178,24,43)"
+        ],
+        "heatmap-radius": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          8, 10,
+          10, 18,
+          12, 28,
+          14, 40
+        ],
+        "heatmap-opacity": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          8, 0.9,
+          14, 0.7,
+          15, 0
+        ]
+      }
+    },
+    {
+      "id": "crime-points",
+      "type": "circle",
+      "source": "crime",
+      "source-layer": "crime",
+      "minzoom": 10,
+      "paint": {
+        "circle-radius": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          10, 1,
+          12, 2,
+          15, 3,
+          17, 5,
+          19, 7
+        ],
+        "circle-color": [
+          "case",
+          ["==", ["get", "crime_category"], "felony"], "#dc2626",
+          ["==", ["get", "crime_category"], "misdemeanor"], "#ea580c",
+          ["==", ["get", "crime_category"], "violation"], "#facc15",
+          "#666666"
+        ],
+        "circle-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 0.3,
+          12, 0.4,
+          15, 0.6,
+          17, 0.8,
+          19, 0.9
+        ],
+        "circle-stroke-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 0,
+          12, 0.3,
+          15, 0.5,
+          17, 1,
+          19, 1.5
+        ],
+        "circle-stroke-color": "#ffffff"
+      }
+    },
+    {
+      "id": "crime-2024-heatmap",
+      "type": "heatmap",
+      "source": "crime_2024",
+      "source-layer": "crime_2024",
+      "maxzoom": 15,
+      "paint": {
+        "heatmap-weight": [
+          "case",
+          ["==", ["get", "crime_category"], "felony"], 1.0,
+          ["==", ["get", "crime_category"], "misdemeanor"], 0.7,
+          ["==", ["get", "crime_category"], "violation"], 0.4,
+          0.5
+        ],
+        "heatmap-intensity": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          8, 0.8,
+          10, 1.2,
+          12, 1.8,
+          14, 2.5
+        ],
+        "heatmap-color": [
+          "interpolate",
+          ["linear"],
+          ["heatmap-density"],
+          0, "rgba(33,102,172,0)",
+          0.2, "rgb(103,169,207)",
+          0.4, "rgb(209,229,240)",
+          0.6, "rgb(253,219,199)",
+          0.8, "rgb(239,138,98)",
+          1, "rgb(178,24,43)"
+        ],
+        "heatmap-radius": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          8, 10,
+          10, 18,
+          12, 28,
+          14, 40
+        ],
+        "heatmap-opacity": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          8, 0.9,
+          14, 0.7,
+          15, 0
+        ]
+      }
+    },
+    {
+      "id": "crime-2024-points",
+      "type": "circle",
+      "source": "crime_2024",
+      "source-layer": "crime_2024",
+      "minzoom": 10,
+      "paint": {
+        "circle-radius": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          10, 2,
+          12, 3,
+          15, 4,
+          17, 6,
+          19, 8
+        ],
+        "circle-color": [
+          "case",
+          ["==", ["get", "crime_category"], "felony"], "#dc2626",
+          ["==", ["get", "crime_category"], "misdemeanor"], "#ea580c",
+          ["==", ["get", "crime_category"], "violation"], "#facc15",
+          "#666666"
+        ],
+        "circle-opacity": [
+          "step",
+          ["zoom"],
+          0, 9,
+          0.8, 15,
+          0.9
+        ],
+        "circle-stroke-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 0.5,
+          12, 0.8,
+          15, 1,
+          17, 1.5,
+          19, 2
+        ],
+        "circle-stroke-color": "#ffffff"
+      }
+    },
+    {
+      "id": "poi-points",
+      "type": "circle",
+      "source": "poi",
+      "source-layer": "poi",
+      "minzoom": 12,
+      "paint": {
+        "circle-radius": [
+          "interpolate", 
+          ["linear"], 
+          ["zoom"], 
+          12, 4,
+          14, 5,
+          16, 6,
+          18, 8
+        ],
+        "circle-color": [
+          "case",
+          ["==", ["get", "poi_category"], "transportation"], "#2563eb",
+          ["==", ["get", "poi_category"], "education"], "#16a34a",
+          ["==", ["get", "poi_category"], "healthcare"], "#dc2626",
+          ["==", ["get", "poi_category"], "commercial"], "#ea580c",
+          ["==", ["get", "poi_category"], "entertainment"], "#9333ea",
+          ["==", ["get", "poi_category"], "religious"], "#0891b2",
+          ["==", ["get", "poi_category"], "government"], "#1f2937",
+          ["==", ["get", "poi_category"], "sports"], "#059669",
+          ["==", ["get", "poi_category"], "industrial"], "#6b7280",
+          ["==", ["get", "poi_category"], "residential"], "#f59e0b",
+          ["==", ["get", "poi_category"], "historic"], "#8b5cf6",
+          "#64748b"
+        ],
+        "circle-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          12, 0.8,
+          14, 0.9,
+          16, 1.0,
+          18, 1.0
+        ],
+        "circle-stroke-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          12, 1.5,
+          14, 2,
+          16, 2.5,
+          18, 3
+        ],
+        "circle-stroke-color": "#ffffff"
+      }
+    },
+    {
+      "id": "taxi-zones-fill",
+      "type": "fill",
+      "source": "taxi_zones",
+      "source-layer": "taxi_zones",
+      "paint": {
+        "fill-color": [
+          "step", 
+          ["get", "total_demand"],
+          "#ffffcc",
+          20000,    "#ffeda0",
+          200000,   "#fed976",
+          600000,   "#feb24c",
+          1100000,  "#fd8d3c",
+          1600000,  "#fc4e2a",
+          2300000,  "#e31a1c",
+          2700000,  "#bd0026"
+        ],
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "taxi-zones-outline",
+      "type": "line",
+      "source": "taxi_zones",
+      "source-layer": "taxi_zones",
+      "paint": {
+        "line-color": "#333333",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 0.5,
+          14, 1.5,
+          16, 2
+        ],
+        "line-opacity": 0.8
+      }
+    }
+  ]
+}

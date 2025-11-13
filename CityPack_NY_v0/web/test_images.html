@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Test Satellite & Street View Images</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui; margin: 20px; }
+    .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+    .test-result { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .images { display: flex; gap: 20px; margin: 10px 0; }
+    .image-container { flex: 1; }
+    .image-container img { width: 100%; max-width: 300px; height: auto; border: 1px solid #ddd; }
+    button { padding: 8px 16px; margin: 5px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0052a3; }
+  </style>
+</head>
+<body>
+  <h1>🌍 Satellite & Street View Image Test</h1>
+  
+  <div class="test-section">
+    <h2>🔧 API Server Status</h2>
+    <button onclick="testHealthAPI()">Test Health Endpoint</button>
+    <div id="health-result" class="test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>📊 Image Info API</h2>
+    <p>Test coordinates: Times Square (40.7589, -73.9851)</p>
+    <button onclick="testImageInfoAPI()">Get Image Info</button>
+    <div id="info-result" class="test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>🖼️ Image Display Test</h2>
+    <button onclick="loadImages()">Load Satellite & Street View</button>
+    <div id="images-result" class="test-result"></div>
+    <div id="images-display" class="images"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>🗺️ Grid Markers Info</h2>
+    <button onclick="loadGridInfo()">Load Grid Configuration</button>
+    <div id="grid-result" class="test-result"></div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8081';
+    const TEST_LAT = 40.7589;
+    const TEST_LON = -73.9851;
+
+    async function testHealthAPI() {
+      const resultDiv = document.getElementById('health-result');
+      resultDiv.innerHTML = '⏳ Testing health endpoint...';
+      
+      try {
+        const response = await fetch(`${API_BASE}/health`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.className = 'test-result success';
+          resultDiv.innerHTML = `✅ Health API working! Status: ${data.status}`;
+        } else {
+          resultDiv.className = 'test-result error';
+          resultDiv.innerHTML = `❌ Health API error: ${response.status}`;
+        }
+      } catch (error) {
+        resultDiv.className = 'test-result error';
+        resultDiv.innerHTML = `❌ Health API failed: ${error.message}`;
+      }
+    }
+
+    async function testImageInfoAPI() {
+      const resultDiv = document.getElementById('info-result');
+      resultDiv.innerHTML = '⏳ Fetching image info...';
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/images?lat=${TEST_LAT}&lon=${TEST_LON}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.className = 'test-result success';
+          resultDiv.innerHTML = `
+            ✅ Image Info API working!<br/>
+            📍 Location: ${data.location.lat}, ${data.location.lon}<br/>
+            🛰️ Satellite: ${data.satellite.available ? 'Available' : 'Not available'}<br/>
+            🚶 Street View: ${data.streetview.available ? 'Available' : 'Not available'}
+            ${data.streetview.available ? `<br/>   Distance: ${data.streetview.info.distance_m}m away` : ''}
+          `;
+        } else {
+          resultDiv.className = 'test-result error';
+          resultDiv.innerHTML = `❌ Image Info API error: ${response.status}`;
+        }
+      } catch (error) {
+        resultDiv.className = 'test-result error';
+        resultDiv.innerHTML = `❌ Image Info API failed: ${error.message}`;
+      }
+    }
+
+    async function loadImages() {
+      const resultDiv = document.getElementById('images-result');
+      const imagesDiv = document.getElementById('images-display');
+      
+      resultDiv.innerHTML = '⏳ Loading images...';
+      imagesDiv.innerHTML = '';
+      
+      try {
+        // Load satellite image
+        const satelliteUrl = `${API_BASE}/api/satellite?lat=${TEST_LAT}&lon=${TEST_LON}`;
+        const streetviewUrl = `${API_BASE}/api/streetview?lat=${TEST_LAT}&lon=${TEST_LON}&quality=1024`;
+        
+        imagesDiv.innerHTML = `
+          <div class="image-container">
+            <h4>🛰️ Satellite View</h4>
+            <img src="${satelliteUrl}" alt="Satellite View" 
+                 onload="onImageLoad(this, 'satellite')" 
+                 onerror="onImageError(this, 'satellite')" />
+          </div>
+          <div class="image-container">
+            <h4>🚶 Street View</h4>
+            <img src="${streetviewUrl}" alt="Street View" 
+                 onload="onImageLoad(this, 'streetview')" 
+                 onerror="onImageError(this, 'streetview')" />
+          </div>
+        `;
+        
+        resultDiv.className = 'test-result';
+        resultDiv.innerHTML = '⏳ Loading images... (check below)';
+        
+      } catch (error) {
+        resultDiv.className = 'test-result error';
+        resultDiv.innerHTML = `❌ Image loading failed: ${error.message}`;
+      }
+    }
+
+    function onImageLoad(img, type) {
+      const resultDiv = document.getElementById('images-result');
+      const current = resultDiv.innerHTML;
+      resultDiv.innerHTML = current.replace('⏳ Loading images...', '').replace('(check below)', '') + 
+                           `✅ ${type} image loaded successfully! `;
+      resultDiv.className = 'test-result success';
+    }
+
+    function onImageError(img, type) {
+      const resultDiv = document.getElementById('images-result');
+      const current = resultDiv.innerHTML;
+      resultDiv.innerHTML = current + `❌ ${type} image failed to load! `;
+      resultDiv.className = 'test-result error';
+      
+      // Replace with error message
+      img.parentElement.innerHTML = `
+        <h4>${type === 'satellite' ? '🛰️' : '🚶'} ${type === 'satellite' ? 'Satellite' : 'Street'} View</h4>
+        <div style="border: 1px solid #ddd; padding: 20px; text-align: center; color: #666;">
+          ${type} image not available
+        </div>
+      `;
+    }
+
+    async function loadGridInfo() {
+      const resultDiv = document.getElementById('grid-result');
+      resultDiv.innerHTML = '⏳ Loading grid configuration...';
+      
+      try {
+        const response = await fetch('./data/image_grid_config.json');
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.className = 'test-result success';
+          resultDiv.innerHTML = `
+            ✅ Grid configuration loaded!<br/>
+            📏 Standard grid: ${data.total_points.standard.toLocaleString()} points (${data.grid_spacing_meters.standard}m spacing)<br/>
+            📏 Simple grid: ${data.total_points.simple.toLocaleString()} points (${data.grid_spacing_meters.simple}m spacing)<br/>
+            🗺️ Coverage: ${data.coverage_area}
+          `;
+        } else {
+          resultDiv.className = 'test-result error';
+          resultDiv.innerHTML = `❌ Grid config error: ${response.status}`;
+        }
+      } catch (error) {
+        resultDiv.className = 'test-result error';
+        resultDiv.innerHTML = `❌ Grid config failed: ${error.message}`;
+      }
+    }
+
+    // Auto-run health check on page load
+    window.onload = function() {
+      testHealthAPI();
+    };
+  </script>
+</body>
+</html>
+

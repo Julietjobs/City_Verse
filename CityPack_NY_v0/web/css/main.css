@@ -1,0 +1,734 @@
+/* CityVerse Main Styles */
+
+/* Reset and Base Styles */
+html, body, #map { 
+  height: 100%; 
+  margin: 0; 
+  padding: 0; 
+}
+
+/* Control Panel Styles */
+.panel {
+  position: absolute; 
+  top: 12px; 
+  right: 12px; 
+  z-index: 10;
+  background: #fff; 
+  padding: 12px 14px; 
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.15); 
+  font: 13px/1.45 system-ui;
+  max-width: 300px; 
+  min-width: 240px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 自定义滚动条样式（Webkit浏览器） */
+.panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.panel::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.panel::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.panel h3 { 
+  margin: 0 0 8px; 
+  font-size: 14px; 
+}
+
+.panel h4 { 
+  margin: 10px 0 6px; 
+  font-size: 13px; 
+  color: #444; 
+}
+
+/* Toggle Controls */
+.toggle { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  margin: 6px 0; 
+}
+
+.toggle input[type="checkbox"] {
+  margin: 0;
+}
+
+.toggle label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Legend Styles */
+.legend { 
+  margin-top: 8px; 
+}
+
+.legend .item { 
+  display: flex; 
+  align-items: center; 
+  margin: 4px 0; 
+}
+
+.legend .swatch { 
+  width: 14px; 
+  height: 14px; 
+  margin-right: 6px; 
+  border: 1px solid #999; 
+  flex-shrink: 0;
+}
+
+/* Pills for always-visible layers */
+.pill { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 6px; 
+  padding: 2px 8px; 
+  border-radius: 999px; 
+  background: #f3f4f6; 
+  margin: 2px 4px 0 0; 
+}
+
+.pill .dot { 
+  width: 10px; 
+  height: 10px; 
+  border-radius: 50%; 
+  flex-shrink: 0;
+}
+
+/* Divider */
+.hr { 
+  height: 1px; 
+  background: #eee; 
+  margin: 8px 0; 
+}
+
+/* Time Control Styles */
+.time-control { 
+  margin: 10px 0; 
+}
+
+.time-control label { 
+  display: block; 
+  font-weight: 600; 
+  margin-bottom: 4px; 
+}
+
+.time-slider { 
+  width: 100%; 
+  margin: 8px 0; 
+}
+
+.time-display { 
+  text-align: center; 
+  font-weight: 600; 
+  color: #0a84ff; 
+  margin: 4px 0; 
+}
+
+/* POI Filter Styles */
+.filter-control {
+  margin: 10px 0;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.filter-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 8px 0;
+}
+
+/* Image Popup Styles */
+.image-popup {
+  max-width: 600px !important;
+  min-width: 500px;
+}
+
+.image-popup .maplibregl-popup-content {
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Taxi Demand Popup Styles */
+.taxi-demand-popup .maplibregl-popup-content {
+  max-width: 440px !important;
+  width: 440px !important;
+  padding: 0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.taxi-demand-popup .maplibregl-popup-content > div {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.maplibregl-popup-content {
+  max-width: none !important;
+  width: auto !important;
+  padding: 14px;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.popup-header {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.popup-images {
+  display: flex;
+  gap: 1px;
+}
+
+.popup-image-container {
+  flex: 1;
+  position: relative;
+}
+
+.popup-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.popup-image-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.popup-info {
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.popup-loading {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.popup-error {
+  padding: 16px;
+  color: #dc3545;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .panel {
+    top: 8px;
+    right: 8px;
+    max-width: calc(100vw - 16px);
+    min-width: auto;
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 80px);
+  }
+  
+  .image-popup {
+    max-width: calc(100vw - 20px) !important;
+    min-width: auto;
+  }
+  
+  .popup-images {
+    flex-direction: column;
+  }
+  
+  .taxi-demand-popup .maplibregl-popup-content {
+    max-width: calc(100vw - 40px) !important;
+    width: calc(100vw - 40px) !important;
+  }
+}
+
+/* Traffic Flow Control Panel */
+.tf-control-panel {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  z-index: 10;
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  font: 13px/1.45 system-ui;
+  max-width: 320px;
+  min-width: 280px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 自定义滚动条样式（与右侧panel保持一致） */
+.tf-control-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tf-control-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.tf-control-panel::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.tf-control-panel::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.tf-control-panel h3 {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.tf-control-panel h4 {
+  margin: 12px 0 8px 0;
+  font-size: 13px;
+  color: #444;
+}
+
+/* Traffic Flow Stats Table */
+.tf-stats-table {
+  width: 100%;
+  margin-bottom: 12px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.tf-stats-table td {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tf-stats-table td:first-child {
+  font-weight: 500;
+  color: #666;
+}
+
+.tf-stats-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Traffic Flow Upload Section */
+.tf-upload-section {
+  margin: 12px 0;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.tf-file-input-wrapper {
+  margin-bottom: 8px;
+}
+
+.tf-file-input-wrapper label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+}
+
+.tf-file-input-wrapper input[type="file"] {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  background: white;
+}
+
+/* Traffic Flow Control Box */
+.tf-control-box {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Traffic Flow Speed Control */
+.tf-speed-control {
+  margin-bottom: 12px;
+}
+
+.tf-speed-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #666;
+}
+
+.tf-speed-slider {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.tf-speed-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tf-speed-btn {
+  flex: 1;
+  padding: 6px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+.tf-speed-btn:hover {
+  background: #e5e7eb;
+}
+
+/* Traffic Flow Buttons */
+.tf-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tf-btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.tf-btn-primary:hover {
+  background: #2563eb;
+}
+
+.tf-btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.tf-btn-secondary:hover {
+  background: #4b5563;
+}
+
+/* Traffic Flow Info */
+.tf-info {
+  margin-top: 12px;
+  padding: 8px;
+  background: #f9fafb;
+  border-radius: 4px;
+  font-size: 11px;
+  min-height: 30px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.tf-info p {
+  margin: 4px 0;
+}
+
+/* Traffic Flow Shortcuts */
+.tf-shortcuts {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive Design for Traffic Flow */
+@media (max-width: 768px) {
+  .tf-control-panel {
+    top: 8px;
+    left: 10px;
+    max-width: calc(100vw - 20px);
+    min-width: auto;
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 80px);
+  }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #f3f4f6;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spinner-rotate 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+
+.loading-message {
+  background: white;
+  padding: 24px 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  text-align: center;
+  max-width: 300px;
+}
+
+.loading-message .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+.loading-message h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.loading-message p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Utility Classes */
+.hidden {
+  display: none;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-small {
+  font-size: 11px;
+}
+
+.text-muted {
+  color: #666;
+}
+
+.font-weight-bold {
+  font-weight: 600;
+}
+
+.margin-top-small {
+  margin-top: 4px;
+}
+
+.margin-bottom-small {
+  margin-bottom: 4px;
+}
+
+/* =================================================================
+   MapLibre Controls Position Adjustment
+   ================================================================= */
+
+/* 地图控制按钮位置调整 */
+.maplibregl-ctrl-bottom-left {
+  bottom: 70px !important;  /* 为weather bar预留空间 */
+  left: 10px !important;
+}
+
+.maplibregl-ctrl-bottom-left .maplibregl-ctrl {
+  margin: 0 0 10px 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .maplibregl-ctrl-bottom-left {
+    bottom: 60px !important;
+    left: 10px !important;
+  }
+}
+
+/* =================================================================
+   Weather Information Bar (Bottom)
+   ================================================================= */
+
+.weather-bar {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f3f4f6;
+  color: #374151;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  z-index: 500;
+  transition: all 0.3s ease;
+  max-width: 900px;
+  min-width: 600px;
+}
+
+.weather-bar.hidden {
+  transform: translate(-50%, 120%);
+  opacity: 0;
+}
+
+.weather-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.weather-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.weather-details {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.weather-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 80px;
+}
+
+.weather-info-grid {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.weather-info-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.weather-label {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.weather-value {
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Responsive design for weather bar */
+@media (max-width: 1024px) {
+  .weather-bar {
+    min-width: auto;
+    max-width: calc(100vw - 360px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .weather-bar.hidden {
+    transform: translate(-50%, 120%);
+  }
+  
+  .weather-info-item {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .weather-bar {
+    bottom: 8px;
+    padding: 8px 16px;
+    max-width: calc(100vw - 20px);
+    min-width: auto;
+  }
+  
+  .weather-bar-content {
+    gap: 10px;
+  }
+  
+  .weather-icon {
+    font-size: 24px;
+  }
+  
+  .weather-details {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .weather-date {
+    min-width: auto;
+    font-size: 11px;
+  }
+  
+  .weather-info-grid {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .weather-info-item {
+    font-size: 10px;
+  }
+}

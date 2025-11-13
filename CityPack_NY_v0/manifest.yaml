@@ -1,0 +1,84 @@
+# CityVerse Data Package Manifest
+# New York City Digital Twin Platform - Manhattan Focus
+
+city: "NewYork"
+region: "Manhattan"
+version: "v0.2"
+last_updated: "2025-09-17"
+timezone: "America/New_York"
+
+# Coordinate Reference Systems
+crs:
+  storage: "EPSG:3857"        # Web Mercator (for web rendering)
+  processing: "EPSG:32618"    # UTM Zone 18N (for Manhattan)
+  original: "EPSG:4326"       # WGS84 (source data)
+
+# Spatial Extent (Manhattan bounds)
+extent: 
+  minx: -74.0479
+  miny: 40.6829
+  maxx: -73.9067
+  maxy: 40.8820
+  description: "Manhattan Island, NYC"
+
+# Temporal Coverage
+time:
+  crime_historical:
+    start: "2014-01-01T00:00:00Z"
+    end: "2024-12-31T23:59:59Z"
+    description: "Historical crime data"
+  crime_2024_weekly:
+    start: "2024-01-01T00:00:00Z" 
+    end: "2024-12-31T23:59:59Z"
+    step: "weekly"
+    description: "2024 weekly crime breakdown"
+  population:
+    year: 2020
+    source: "US Census ACS 5-Year"
+    description: "Census tract population density"
+
+# Data Layers
+layers:
+  base:
+    - buildings
+    - roads  
+    - traffic_signals
+  overlays:
+    - population_density
+    - crime_historical
+    - crime_2024_weekly
+    - points_of_interest
+    - satellite_imagery
+    - street_view
+
+# Grid Systems
+grids:
+  flow: {type: "H3", res: 9}  # For future dynamic data
+  analysis: {type: "UTM", cell_size: 100}  # 100m grid cells
+
+# Data Sources & Licenses
+sources:
+  osm:
+    source: "OpenStreetMap"
+    license: "ODbL"
+    url: "https://download.geofabrik.de/"
+    extract_date: "2024-09"
+  census:
+    source: "US Census Bureau"
+    license: "Public Domain" 
+    datasets: ["TIGER/Line", "ACS 5-Year"]
+  crime:
+    source: "NYC Open Data - NYPD"
+    license: "Public Domain"
+    url: "https://data.cityofnewyork.us/"
+  imagery:
+    satellite: "ESRI World Imagery"
+    streetview: "Mapillary API"
+
+# Technical Specifications
+technical:
+  web_format: "MBTiles (Vector Tiles)"
+  processing_format: "GeoParquet" 
+  coordinate_precision: 6  # decimal places
+  tile_max_zoom: 18
+  tile_min_zoom: 8

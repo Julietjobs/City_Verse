@@ -1,0 +1,158 @@
+{
+  "layers": {
+    "base": {
+      "buildings": {
+        "id": "buildings",
+        "label": "Buildings",
+        "color": "#777777",
+        "alwaysVisible": true,
+        "description": "Building footprints from OpenStreetMap"
+      },
+      "roads": {
+        "id": "roads", 
+        "label": "Roads",
+        "color": "#0a84ff",
+        "alwaysVisible": true,
+        "description": "Road network from OpenStreetMap"
+      }
+    },
+    "overlays": {
+      "signals": {
+        "id": "signals",
+        "layerIds": ["signals"],
+        "label": "Traffic Signals",
+        "color": "#e11d48",
+        "icon": "🚦",
+        "description": "Traffic signal locations",
+        "hasPopup": false
+      },
+      "tracts": {
+        "id": "tracts-fill",
+        "layerIds": ["tracts-fill", "tracts-outline"],
+        "label": "Census Tracts — Population Density", 
+        "icon": "👥",
+        "description": "Population density by Census tract",
+        "hasPopup": true,
+        "hasLegend": true,
+        "legendType": "choropleth",
+        "legendBins": [
+          { "color": "#f7fbff", "label": "0-2k", "min": 0, "max": 2000 },
+          { "color": "#deebf7", "label": "2k-5k", "min": 2000, "max": 5000 },
+          { "color": "#c6dbef", "label": "5k-10k", "min": 5000, "max": 10000 },
+          { "color": "#9ecae1", "label": "10k-20k", "min": 10000, "max": 20000 },
+          { "color": "#6baed6", "label": "20k-40k", "min": 20000, "max": 40000 },
+          { "color": "#3182bd", "label": "40k-80k", "min": 40000, "max": 80000 },
+          { "color": "#08519c", "label": "80k+", "min": 80000, "max": null }
+        ]
+      },
+      "crime": {
+        "id": "crime",
+        "layerIds": ["crime-heatmap", "crime-points"],
+        "label": "Crime Data — Heat Map & Points (2014-2024)",
+        "icon": "🚨",
+        "description": "Historical crime data with heatmap and point visualization",
+        "hasPopup": true,
+        "hasLegend": true,
+        "hasTimeControl": true,
+        "timeControlType": "year",
+        "timeRange": { "min": 2014, "max": 2024, "default": 2024 },
+        "legendType": "categorical",
+        "categories": [
+          { "color": "#dc2626", "label": "Felony", "key": "felony" },
+          { "color": "#ea580c", "label": "Misdemeanor", "key": "misdemeanor" },
+          { "color": "#facc15", "label": "Violation", "key": "violation" }
+        ]
+      },
+      "crime2024": {
+        "id": "crime-2024",
+        "layerIds": ["crime-2024-heatmap", "crime-2024-points"],
+        "label": "2024 Crime Data — Weekly View",
+        "icon": "📊",
+        "description": "2024 crime data with weekly breakdown",
+        "hasPopup": true,
+        "hasLegend": true,
+        "hasTimeControl": true,
+        "timeControlType": "week",
+        "timeRange": { "min": 1, "max": 52, "default": 52 },
+        "legendType": "categorical",
+        "categories": [
+          { "color": "#dc2626", "label": "Felony", "key": "felony" },
+          { "color": "#ea580c", "label": "Misdemeanor", "key": "misdemeanor" },
+          { "color": "#facc15", "label": "Violation", "key": "violation" }
+        ]
+      },
+      "poi": {
+        "id": "poi-points",
+        "layerIds": ["poi-points"],
+        "label": "Points of Interest (POI)",
+        "icon": "📍",
+        "description": "Points of interest with category filtering",
+        "hasPopup": true,
+        "hasFilters": true,
+        "filterType": "category"
+      },
+      "imageViewer": {
+        "id": "imageViewer",
+        "layerIds": [],
+        "label": "Image Viewer Mode",
+        "icon": "📷",
+        "description": "Click map to view satellite and street view images",
+        "hasPopup": false,
+        "hasLegend": true
+      },
+      "trafficFlow": {
+        "id": "trafficFlow",
+        "layerIds": ["tf-intersections", "tf-roads", "tf-center-lines", "tf-lane-markings", "tf-vehicles", "tf-traffic-lights"],
+        "label": "Traffic Flow Control",
+        "icon": "🚦",
+        "description": "CityFlow simulation replay with traffic control",
+        "hasPopup": false,
+        "hasLegend": true,
+        "hasControl": true
+      },
+      "taxiDemand": {
+        "id": "taxi-zones-fill",
+        "layerIds": ["taxi-zones-fill", "taxi-zones-outline"],
+        "label": "Taxi Demand of 2024",
+        "icon": "🚕",
+        "description": "NYC Yellow Taxi demand by zone and date (2024 full year)",
+        "hasPopup": true,
+        "hasLegend": true,
+        "hasTimeControl": true,
+        "timeControlType": "date",
+        "dateRange": { "min": "2024-01-01", "max": "2024-12-31", "default": "2024-01-01" },
+        "legendType": "choropleth",
+        "legendTitle": "Daily Demand (Selected Date)",
+        "legendBins": [
+          { "color": "#ffffcc", "label": "< 120", "min": 0, "max": 120 },
+          { "color": "#ffeda0", "label": "120 - 670", "min": 120, "max": 670 },
+          { "color": "#fed976", "label": "670 - 1.5k", "min": 670, "max": 1540 },
+          { "color": "#feb24c", "label": "1.5k - 3.2k", "min": 1540, "max": 3165 },
+          { "color": "#fd8d3c", "label": "3.2k - 4.6k", "min": 3165, "max": 4560 },
+          { "color": "#fc4e2a", "label": "4.6k - 6.7k", "min": 4560, "max": 6665 },
+          { "color": "#e31a1c", "label": "6.7k - 8.3k", "min": 6665, "max": 8300 },
+          { "color": "#bd0026", "label": "> 8.3k", "min": 8300, "max": null }
+        ]
+      },
+      "weather": {
+        "id": "weather",
+        "layerIds": [],
+        "label": "Weather Information (2024)",
+        "icon": "🌤️",
+        "description": "Daily weather conditions for Manhattan in 2024",
+        "hasPopup": false,
+        "hasLegend": false,
+        "hasTimeControl": true,
+        "timeControlType": "date",
+        "dateRange": { "min": "2024-01-01", "max": "2024-12-31", "default": "2024-01-01" },
+        "hasWeatherBar": true
+      }
+    }
+  },
+  "settings": {
+    "mapCenter": [-73.9851, 40.7589],
+    "mapZoom": 12,
+    "tileServerUrl": "http://localhost:8080",
+    "imageApiUrl": "http://localhost:8081"
+  }
+}

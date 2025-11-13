@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CityFlow Replay - MapLibre</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="lib/maplibre-gl.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 300px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1;
+        }
+        
+        .control-panel h2 {
+            margin: 0 0 20px 0;
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .stats-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        
+        .stats-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stats-table td:first-child {
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .stats-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .file-upload {
+            margin-bottom: 20px;
+        }
+        
+        .file-input-wrapper {
+            margin-bottom: 10px;
+        }
+        
+        .file-input-wrapper label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #2196F3;
+        }
+        
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+        
+        .control-box {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        
+        .control-box h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .speed-control {
+            margin-bottom: 15px;
+        }
+        
+        .speed-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .speed-slider {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .speed-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .speed-btn {
+            flex: 1;
+            padding: 8px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        
+        .speed-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .info-box {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .info-box p {
+            margin: 5px 0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        
+        .legend h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 12px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <div class="control-panel">
+        <h2>CityFlow Replay</h2>
+        
+        <table class="stats-table">
+            <tr>
+                <td>Vehicles</td>
+                <td id="car-num">0</td>
+            </tr>
+            <tr>
+                <td>Current Step</td>
+                <td id="current-step">0</td>
+            </tr>
+            <tr>
+                <td>Total Steps</td>
+                <td id="total-steps">0</td>
+            </tr>
+            <tr>
+                <td>Progress</td>
+                <td id="progress">0%</td>
+            </tr>
+        </table>
+        
+        <div class="file-upload">
+            <div class="file-input-wrapper">
+                <label>Road Network File (JSON)</label>
+                <input type="file" id="roadnet-file" accept=".json">
+            </div>
+            <div class="file-input-wrapper">
+                <label>Replay File (TXT)</label>
+                <input type="file" id="replay-file" accept=".txt">
+            </div>
+            <button class="btn" id="start-btn">Load and Start</button>
+        </div>
+        
+        <div class="control-box" id="control-box" style="display: none;">
+            <h3>Playback Control</h3>
+            
+            <div class="speed-control">
+                <div class="speed-label">
+                    <span>Replay Speed</span>
+                    <span id="speed-value">0.5x</span>
+                </div>
+                <input type="range" class="speed-slider" id="speed-slider" min="0" max="100" value="50">
+            </div>
+            
+            <div class="speed-buttons">
+                <button class="speed-btn" id="slow-btn">−</button>
+                <button class="speed-btn" id="fast-btn">+</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
+                <button class="btn btn-secondary" id="stop-btn" style="padding: 8px; font-size: 14px;">Stop</button>
+                <button class="btn btn-secondary" id="prev-btn" style="padding: 8px; font-size: 14px;">◄ Prev</button>
+                <button class="btn btn-secondary" id="next-btn" style="padding: 8px; font-size: 14px;">Next ►</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+                <button class="btn btn-secondary" id="play-btn" style="padding: 10px;">▶ Play</button>
+                <button class="btn btn-secondary" id="pause-btn" style="padding: 10px;">⏸ Pause</button>
+            </div>
+        </div>
+        
+        <div class="info-box" id="info-box"></div>
+        
+        <div class="loading" id="loading">
+            <p>Loading...</p>
+        </div>
+    </div>
+    
+        <div class="legend">
+        <h4>Legend</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #586970;"></div>
+            <span>Road / Intersection</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #bed8e8;"></div>
+            <span>Lane Marking</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #f2bfd7;"></div>
+            <span>Vehicle</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #85ee00;"></div>
+            <span>Green Light</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #db635e;"></div>
+            <span>Red Light</span>
+        </div>
+        <hr style="margin: 10px 0; border: none; border-top: 1px solid #eee;">
+        <h4 style="font-size: 12px; margin-bottom: 8px;">Keyboard Shortcuts</h4>
+        <div style="font-size: 11px; line-height: 1.6;">
+            <div><b>Space</b>: Play/Pause</div>
+            <div><b>S</b>: Stop (Reset)</div>
+            <div><b>← or [</b>: Previous Frame</div>
+            <div><b>→ or ]</b>: Next Frame</div>
+            <div><b>- / +</b>: Speed Down/Up</div>
+        </div>
+    </div>
+    
+    <script src="lib/maplibre-gl.js"></script>
+    <script src="js/cityflow-replay.js"></script>
+</body>
+</html>

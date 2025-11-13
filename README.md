@@ -1,8 +1,14 @@
 # CityVerse 
 
+This repo is for CityVerse: A Unified and Adaptive Data Framework for Evaluating Large Language Models in Urban Computing
 
+## 📘 Introduction
 
-## Deployment & Usage
+Large Language Models (LLMs) show remarkable potential for urban computing, from spatial reasoning to predictive analytics. However, evaluating LLMs across diverse urban tasks faces two critical challenges: lack of unified platforms for consistent multi-source data access, and fragmented task definitions that hinder fair comparison. To address these challenges, we present CityVerse, the first unified platform integrating multi-source urban data, capability-based task taxonomy, and dynamic simulation for systematic LLM evaluation in urban contexts. CityVerse provides: (1) coordinate-based Data APIs unifying ten categories of urban data—including spatial features, temporal dynamics, demographics, and multi-modal imagery-with over 38 million curated records; (2) Task APIs organizing 43 urban computing tasks into a four-level cognitive hierarchy: Perception, Spatial Understanding, Reasoning \& Prediction, and Decision \& Interaction, enabling standardized evaluation across capability levels; (3) an interactive visualization frontend supporting real-time data retrieval, multi-layer display, and simulation replay for intuitive exploration and validation. We validate the platform's effectiveness through evaluations on mainstream LLMs across representative tasks, demonstrating its capability to support reproducible and systematic assessment. CityVerse provides a reusable foundation for advancing LLMs and multi-task approaches in the urban computing domain.
+
+*The code for our project is currently being prepared, and we plan to make it publicly available as soon as possible. The repository currently contains only the New York City demo. Feel free to try it by following the instructions below.*
+
+## 🚀 Deployment & Usage
 
 ### 1. Start the Tile Server
 
@@ -22,15 +28,13 @@ cd web
 python -m http.server 8000
 ```
 
-Access the frontend at:
-
-👉 **http://localhost:8000/**
+Access the frontend at: http://localhost:8000/
 
 Use the panel on the right to toggle data layers and visualize them on the map.
 
 
 
-![image-20251113170657193](./imgs/image-20251113170657193.png)
+![image1](./imgs/image1.png)
 
 
 
@@ -40,7 +44,7 @@ Use the panel on the right to toggle data layers and visualize them on the map.
 
 ------
 
-## Simulation Replay
+## 🎬 Simulation Replay
 
 To run a trajectory & traffic signal replay:
 
@@ -53,13 +57,13 @@ To run a trajectory & traffic signal replay:
 
 
 
-![image-20251113171055143](./imgs/image-20251113171055143.png)
+![image2](./imgs/image2.png)
 
 
 
 ------
 
-## Image Viewer Mode
+## 🖼️ Image Viewer Mode
 
 The image viewer supports displaying **satellite images** and **street-level photos** at any clicked point on the map.
 
@@ -94,4 +98,10 @@ After launching the server:
 2. Click on any point on the map
 3. Satellite and street-view images for that location will be displayed
 
-![image-20251113171301508](./imgs/image-20251113171301508.png)
+![image3](./imgs/image3.png)
+
+
+
+# 🙏 Acknowledgements
+
+CityVerse is based on many open-source projects, including [Urbench](https://github.com/opendatalab/UrBench), [Cityflow](https://github.com/cityflow-project/CityFlow), [CityBench](https://github.com/tsinghua-fib-lab/CityBench) and [CityGPT](https://github.com/tsinghua-fib-lab/CityGPT). We would like to thank the authors for their contributions to the communities.
