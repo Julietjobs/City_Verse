@@ -1,6 +1,6 @@
 # CityVerse 
 
-This repo is for CityVerse: A Unified Data Platform for Multi-Task Urban Computing with Large Language Models
+This repo is for CityVerse: A Unified Data Framework for Large Language Models in Urban Computing
 
 ## 📘 Introduction
 
